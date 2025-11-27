@@ -16,6 +16,7 @@ def tyhjadRead(df):
         copy_df = df.copy(deep=True)
         for column in df.columns:
             copy_df.loc[copy_df[column]==": ", column] = np.nan
+            copy_df.loc[copy_df[column] == ": m", column] = np.nan
         return copy_df
 
 directory = r"..\data\cleanedDatasets"
