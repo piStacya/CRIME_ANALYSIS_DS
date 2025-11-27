@@ -18,8 +18,8 @@ def tyhjadRead(df):
             copy_df.loc[copy_df[column]==": ", column] = np.nan
         return copy_df
 
-directory = r"..\cleanedDatasets"
-new_directory = r"..\cleanedDatasets\nan_rows"
+directory = r"..\data\cleanedDatasets"
+new_directory = r"..\data\cleanedDatasets\nan_rows"
 for name in os.listdir(directory):
     full_path = os.path.join(directory, name)
 
@@ -27,7 +27,8 @@ for name in os.listdir(directory):
         continue  # skip folders
 
     data = pd.read_csv(full_path, sep="\t")
-    new_data = eemaldaRead(tyhjadRead(data))
+    #new_data = eemaldaRead(tyhjadRead(data))
+    new_data = tyhjadRead(data)
     new_data.to_csv(os.path.join(new_directory, name), sep="\t", index=False)
     print(name)
     #print(new_data.value_counts())
