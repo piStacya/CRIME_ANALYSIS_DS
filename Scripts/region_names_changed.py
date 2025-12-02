@@ -5,6 +5,7 @@ import os
 # Loeme tsv faili sisse (sep='\t' tähendab, et eraldajaks on tabulaator)
 # Asenda 'faili_nimi.tsv' oma faili tegeliku teekonnaga
 cities_df = pd.read_csv('../data/ESTAT_CITIES_6.0.tsv', sep='\t')
+geo_df = pd.read_csv('../data/ESTAT_GEO_25.3.tsv', sep='\t')
 df = pd.read_csv('../data/nutsAndSR.csv', sep='\t')
 df_latin = pd.read_csv('../data/nutscyrandgreek.csv', sep=';')
 df_latin = df_latin.rename(columns={
@@ -31,6 +32,8 @@ print(df_new.head())
 print()
 cities_df = cities_df[['CODE','Label - English']]
 cities_df = cities_df.loc[cities_df['CODE'].str.contains('C')]
+geo_df = geo_df[['CODE','Label - English']]
+geo_dict = pd.Series(geo_df['Label - English'].values, index=geo_df['CODE']).to_dict()
 city_dict = pd.Series(cities_df['Label - English'].values, index=cities_df['CODE']).to_dict()
 # Loome sõnastiku, kus võtmeks on 'NUTS Code' ja väärtuseks 'NUTS label'
 nuts_dict = pd.Series(df_new['Region name'].values, index=df_new['NUTS Code']).to_dict()
@@ -70,12 +73,16 @@ def get_country_name(geo_code):
         prefix = geo_code[:5]
         return COUNTRY_CODES.get(prefix, geo_code)
     return geo_code
+
 def get_region_name(geo_code):
     if isinstance(geo_code, str) and len(geo_code) >=2:
         if geo_code.__contains__('C'):
-            return city_dict.get(geo_code, geo_code)
-        return nuts_dict.get(geo_code, geo_code)
-    return geo_code
+            if geo_code[:-1] == 'C' or geo_code[:-2] == 'C':
+                return city_dict.get(geo_code, geo_code)
+            else:
+                return geo_dict.get(geo_code, geo_code)
+    return geo_dict.get(geo_code, geo_code)
+
 #df_nuts3_data['Country_Code'] = df_nuts3_data['NUTS3_ID'].str[:2]
 def lisa_riik(df):
     if not df.empty:
@@ -94,7 +101,7 @@ def lisa_riik(df):
 
 
 directory = r"..\data\cleanedDatasets\nan_rows\regionDatasets"
-new_directory = r"..\data\cleanedDatasets\nan_rows\regionDatasets\region_names_changed"
+new_directory = r"..\data\cleanedDatasets\nan_rows\regionDatasets\region_names_changed2"
 for name in os.listdir(directory):
     full_path = os.path.join(directory, name)
 
