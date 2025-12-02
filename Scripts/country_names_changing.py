@@ -33,8 +33,11 @@ COUNTRY_CODES = {
 
 def get_country_name(geo_code):
     # võtab vastu geokoodi ja tagastab riigi nime
-    if isinstance(geo_code, str) and len(geo_code) >= 2:
+    if isinstance(geo_code, str) and len(geo_code) == 2:
         prefix = geo_code[:2]
+        return COUNTRY_CODES.get(prefix, geo_code)
+    if isinstance(geo_code, str) and len(geo_code) >= 3:
+        prefix = geo_code[:5]
         return COUNTRY_CODES.get(prefix, geo_code)
     return geo_code
 
@@ -74,7 +77,7 @@ def process_all_files(source_directory, destination_directory):
 
 # käivitamine
 if __name__ == "__main__":
-    source_dir = 'cleanedDatasets'
-    destination_dir = 'cleanedDatasetsCountryNames'
+    source_dir = '../data/cleanedDatasets/nan_rows'
+    destination_dir = '../data/cleanedDatasets/nan_rows/country_names_changed'
 
     process_all_files(source_dir, destination_dir)
