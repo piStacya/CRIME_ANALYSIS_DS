@@ -9,7 +9,7 @@ The project uses crime categories defined by the ICCS (International Classificat
 The analysis also identifies:
 - Crime trends over the years for each ICCS category  
 - Countries with the highest rates for each crime type  
-- Top crime categories for each country and year  
+- Top crime categories for each country
 
 This project is purely descriptive and does not make causal claims.
 
