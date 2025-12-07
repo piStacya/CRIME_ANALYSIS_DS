@@ -1,7 +1,9 @@
 # CRIME_ANALYSIS_DS
 ## Overview
-This project explores crime trends across European countries using publicly available data from Eurostat and provides a reproducible exploratory analysis of crime patterns across Europe.<br>
-The objective was to apply core data science skills: data cleaning, preprocessing, exploratory analysis, visualization, and interpretation, to produce meaningful insights about crime patterns from 2008–2023.<br>
+This project explores crime trends across European countries using publicly available data from Eurostat and provides a reproducible exploratory analysis of crime patterns across Europe.
+
+The objective was to apply core data science skills: data cleaning, preprocessing, exploratory analysis, visualization, and interpretation, to produce meaningful insights about crime patterns from 2008–2023.
+
 The project uses crime categories defined by the ICCS (International Classification of Crime Statistics) framework, allowing consistent comparison across countries and years.
 
 The analysis also identifies:
