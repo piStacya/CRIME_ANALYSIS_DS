@@ -1,4 +1,5 @@
-# CRIME_ANALYSIS_DS
+# CRIME_ANALYSIS_IN_EUROPE
+### Team-B5: Anastassia Käärmann, Helena Angela Kiisler, Kirke Kisand
 ## Overview
 This project explores crime trends across European countries using publicly available data from Eurostat and provides a reproducible exploratory analysis of crime patterns across Europe.
 
