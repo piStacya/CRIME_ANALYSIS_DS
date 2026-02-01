@@ -1,0 +1,192 @@
+[
+  {
+    "code": "AL",
+    "name": "Albania",
+    "nameEt": "Albaania"
+  },
+  {
+    "code": "AT",
+    "name": "Austria",
+    "nameEt": "Austria"
+  },
+  {
+    "code": "BA",
+    "name": "Bosnia and Herzegovina",
+    "nameEt": "Bosnia ja Hertsegoviina"
+  },
+  {
+    "code": "BE",
+    "name": "Belgium",
+    "nameEt": "Belgia"
+  },
+  {
+    "code": "BG",
+    "name": "Bulgaria",
+    "nameEt": "Bulgaaria"
+  },
+  {
+    "code": "CH",
+    "name": "Switzerland",
+    "nameEt": "Šveits"
+  },
+  {
+    "code": "CY",
+    "name": "Cyprus",
+    "nameEt": "Küpros"
+  },
+  {
+    "code": "CZ",
+    "name": "Czechia",
+    "nameEt": "Tšehhi"
+  },
+  {
+    "code": "DE",
+    "name": "Germany",
+    "nameEt": "Saksamaa"
+  },
+  {
+    "code": "DK",
+    "name": "Denmark",
+    "nameEt": "Taani"
+  },
+  {
+    "code": "EE",
+    "name": "Estonia",
+    "nameEt": "Eesti"
+  },
+  {
+    "code": "EL",
+    "name": "Greece",
+    "nameEt": "Kreeka"
+  },
+  {
+    "code": "ES",
+    "name": "Spain",
+    "nameEt": "Hispaania"
+  },
+  {
+    "code": "FI",
+    "name": "Finland",
+    "nameEt": "Soome"
+  },
+  {
+    "code": "FR",
+    "name": "France",
+    "nameEt": "Prantsusmaa"
+  },
+  {
+    "code": "HR",
+    "name": "Croatia",
+    "nameEt": "Horvaatia"
+  },
+  {
+    "code": "HU",
+    "name": "Hungary",
+    "nameEt": "Ungari"
+  },
+  {
+    "code": "IE",
+    "name": "Ireland",
+    "nameEt": "Iirimaa"
+  },
+  {
+    "code": "IS",
+    "name": "Iceland",
+    "nameEt": "Island"
+  },
+  {
+    "code": "IT",
+    "name": "Italy",
+    "nameEt": "Itaalia"
+  },
+  {
+    "code": "LI",
+    "name": "Liechtenstein",
+    "nameEt": "Liechtenstein"
+  },
+  {
+    "code": "LT",
+    "name": "Lithuania",
+    "nameEt": "Leedu"
+  },
+  {
+    "code": "LU",
+    "name": "Luxembourg",
+    "nameEt": "Luksemburg"
+  },
+  {
+    "code": "LV",
+    "name": "Latvia",
+    "nameEt": "Läti"
+  },
+  {
+    "code": "ME",
+    "name": "Montenegro",
+    "nameEt": "Montenegro"
+  },
+  {
+    "code": "MK",
+    "name": "North Macedonia",
+    "nameEt": "Põhja-Makedoonia"
+  },
+  {
+    "code": "MT",
+    "name": "Malta",
+    "nameEt": "Malta"
+  },
+  {
+    "code": "NL",
+    "name": "Netherlands",
+    "nameEt": "Holland"
+  },
+  {
+    "code": "NO",
+    "name": "Norway",
+    "nameEt": "Norra"
+  },
+  {
+    "code": "PL",
+    "name": "Poland",
+    "nameEt": "Poola"
+  },
+  {
+    "code": "PT",
+    "name": "Portugal",
+    "nameEt": "Portugal"
+  },
+  {
+    "code": "RO",
+    "name": "Romania",
+    "nameEt": "Rumeenia"
+  },
+  {
+    "code": "RS",
+    "name": "Serbia",
+    "nameEt": "Serbia"
+  },
+  {
+    "code": "SE",
+    "name": "Sweden",
+    "nameEt": "Rootsi"
+  },
+  {
+    "code": "SI",
+    "name": "Slovenia",
+    "nameEt": "Sloveenia"
+  },
+  {
+    "code": "SK",
+    "name": "Slovakia",
+    "nameEt": "Slovakkia"
+  },
+  {
+    "code": "TR",
+    "name": "Turkey",
+    "nameEt": "Türgi"
+  },
+  {
+    "code": "XK",
+    "name": "Kosovo",
+    "nameEt": "Kosovo"
+  }
+]

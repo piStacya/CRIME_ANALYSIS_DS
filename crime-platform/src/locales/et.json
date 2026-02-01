@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "Avaleht",
+    "explorer": "Uurija",
+    "about": "Meist"
+  },
+  "home": {
+    "title": "Euroopa Kuritegevuse Analüüs",
+    "subtitle": "Interaktiivne kuritegevuse andmete visualiseerimine 39 Euroopa riigis (2008-2023)"
+  },
+  "filters": {
+    "crimeType": "Kuriteo liik",
+    "year": "Aasta",
+    "country": "Riik",
+    "metric": "Mõõdik",
+    "allCrimes": "Kõik kuriteod",
+    "allCountries": "Kogu Euroopa",
+    "per100k": "100 000 elaniku kohta",
+    "absolute": "Absoluutarvud"
+  },
+  "explorer": {
+    "map": "Interaktiivne kaart",
+    "animatedMaps": "Animeeritud kaardid",
+    "trends": "Kuritegevuse trendid",
+    "fingerprints": "Kriminaalsed sõrmejäljed",
+    "profiles": "Riikide profiilid",
+    "data": "Andmetabel"
+  },
+  "about": {
+    "title": "Projektist",
+    "methodology": {
+      "title": "Metoodika",
+      "content": "See analüüs kasutab Eurostati ametlikku kuritegevuse statistikat, mis on normaliseeritud 100 000 elaniku kohta, et võimaldada ausat võrdlust erineva rahvastiku suurusega riikide vahel. Andmed on puhastatud ja töödeldud, et käsitleda puuduvaid väärtusi ning tagada järjepidevus aastate ja piirkondade lõikes."
+    },
+    "dataSources": {
+      "title": "Andmeallikad",
+      "content": "Kõik kuritegevuse andmed pärinevad Eurostati andmebaasist, mis on Euroopa Liidu statistikaamet."
+    },
+    "scope": {
+      "title": "Ulatus ja piirangud",
+      "content": "See projekt hõlmab 25 kuriteo kategooriat 39 Euroopa riigis aastatel 2008-2023. Pange tähele, et aruandlustavad erinevad riigiti ning mõned andmepunktid võivad puududa või ei pruugi olla otseselt võrreldavad."
+    },
+    "team": {
+      "title": "Projektimeeskond",
+      "content": "See projekt töötati välja andmeteaduse portfoolio osana, näidates oskusi andmete töötlemisel, visualiseerimisel ja veebiarenduses."
+    }
+  },
+  "common": {
+    "loading": "Laadimine...",
+    "noData": "Andmed puuduvad",
+    "error": "Tekkis viga",
+    "compare": "Võrdle...",
+    "viewDetails": "Vaata üksikasju"
+  },
+  "crimeCategories": {
+    "violence": "Vägivald",
+    "sexual": "Seksuaalkuriteod",
+    "property": "Varakuriteod",
+    "drugs": "Narkokuriteod",
+    "financial": "Finantskuriteod",
+    "cyber": "Küberkuriteod",
+    "environmental": "Keskkonnakuriteod"
+  }
+}

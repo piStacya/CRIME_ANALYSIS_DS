@@ -1,0 +1,69 @@
+{
+  "violence": {
+    "label": "Violence",
+    "labelEt": "Vägivald",
+    "codes": [
+      "ICCS0101",
+      "ICCS0102",
+      "ICCS020111",
+      "ICCS020221",
+      "ICCS0401"
+    ]
+  },
+  "sexual": {
+    "label": "Sexual Crimes",
+    "labelEt": "Seksuaalkuriteod",
+    "codes": [
+      "ICCS0301",
+      "ICCS03011",
+      "ICCS03012",
+      "ICCS030221",
+      "ICCS0302"
+    ]
+  },
+  "property": {
+    "label": "Property",
+    "labelEt": "Varakuriteod",
+    "codes": [
+      "ICCS0501",
+      "ICCS05012",
+      "ICCS0502",
+      "ICCS05021"
+    ]
+  },
+  "drugs": {
+    "label": "Drugs",
+    "labelEt": "Narkokuriteod",
+    "codes": [
+      "ICCS0601"
+    ]
+  },
+  "financial": {
+    "label": "Financial",
+    "labelEt": "Finantskuriteod",
+    "codes": [
+      "ICCS0701",
+      "ICCS0703",
+      "ICCS07031",
+      "ICCS07041"
+    ]
+  },
+  "cyber": {
+    "label": "Cyber",
+    "labelEt": "Küberkuriteod",
+    "codes": [
+      "ICCS0903",
+      "ICCS09051"
+    ]
+  },
+  "environmental": {
+    "label": "Environmental",
+    "labelEt": "Keskkonnakuriteod",
+    "codes": [
+      "ICCS1001",
+      "ICCS1002",
+      "ICCS1003",
+      "ICCS1004"
+    ]
+  }
+}

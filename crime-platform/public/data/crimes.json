@@ -1,0 +1,127 @@
+[
+  {
+    "code": "ICCS0101",
+    "name": "Intentional homicide",
+    "category": "violence"
+  },
+  {
+    "code": "ICCS0102",
+    "name": "Attempted intentional homicide",
+    "category": "violence"
+  },
+  {
+    "code": "ICCS020111",
+    "name": "Serious assault",
+    "category": "violence"
+  },
+  {
+    "code": "ICCS020221",
+    "name": "Kidnapping",
+    "category": "violence"
+  },
+  {
+    "code": "ICCS0301",
+    "name": "Sexual violence",
+    "category": "sexual"
+  },
+  {
+    "code": "ICCS03011",
+    "name": "Rape",
+    "category": "sexual"
+  },
+  {
+    "code": "ICCS03012",
+    "name": "Sexual assault",
+    "category": "sexual"
+  },
+  {
+    "code": "ICCS030221",
+    "name": "Child pornography",
+    "category": "sexual"
+  },
+  {
+    "code": "ICCS0302",
+    "name": "Sexual exploitation",
+    "category": "sexual"
+  },
+  {
+    "code": "ICCS0401",
+    "name": "Robbery",
+    "category": "violence"
+  },
+  {
+    "code": "ICCS0501",
+    "name": "Burglary",
+    "category": "property"
+  },
+  {
+    "code": "ICCS05012",
+    "name": "Burglary of private residential premises",
+    "category": "property"
+  },
+  {
+    "code": "ICCS0502",
+    "name": "Theft",
+    "category": "property"
+  },
+  {
+    "code": "ICCS05021",
+    "name": "Theft of a motorized vehicle",
+    "category": "property"
+  },
+  {
+    "code": "ICCS0601",
+    "name": "Unlawful acts involving controlled drugs",
+    "category": "drugs"
+  },
+  {
+    "code": "ICCS0701",
+    "name": "Fraud",
+    "category": "financial"
+  },
+  {
+    "code": "ICCS0703",
+    "name": "Corruption",
+    "category": "financial"
+  },
+  {
+    "code": "ICCS07031",
+    "name": "Bribery",
+    "category": "financial"
+  },
+  {
+    "code": "ICCS07041",
+    "name": "Money laundering",
+    "category": "financial"
+  },
+  {
+    "code": "ICCS0903",
+    "name": "Acts against computer systems",
+    "category": "cyber"
+  },
+  {
+    "code": "ICCS09051",
+    "name": "Organized criminal group participation",
+    "category": "cyber"
+  },
+  {
+    "code": "ICCS1001",
+    "name": "Environmental pollution crimes",
+    "category": "environmental"
+  },
+  {
+    "code": "ICCS1002",
+    "name": "Waste dumping crimes",
+    "category": "environmental"
+  },
+  {
+    "code": "ICCS1003",
+    "name": "Protected species crimes",
+    "category": "environmental"
+  },
+  {
+    "code": "ICCS1004",
+    "name": "Natural resource crimes",
+    "category": "environmental"
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "Home",
+    "explorer": "Explorer",
+    "about": "About"
+  },
+  "home": {
+    "title": "European Crime Analysis",
+    "subtitle": "Interactive visualization of crime data across 39 European countries (2008-2023)"
+  },
+  "filters": {
+    "crimeType": "Crime Type",
+    "year": "Year",
+    "country": "Country",
+    "metric": "Metric",
+    "allCrimes": "All Crimes",
+    "allCountries": "All Europe",
+    "per100k": "Per 100,000",
+    "absolute": "Absolute Numbers"
+  },
+  "explorer": {
+    "map": "Interactive Map",
+    "animatedMaps": "Animated Maps",
+    "trends": "Crime Trends Over Time",
+    "fingerprints": "Criminal Fingerprints",
+    "profiles": "Country Profiles",
+    "data": "Data Table"
+  },
+  "about": {
+    "title": "About This Project",
+    "methodology": {
+      "title": "Methodology",
+      "content": "This analysis uses official crime statistics from Eurostat, normalized per 100,000 inhabitants to allow fair comparison between countries of different population sizes. Data has been cleaned and processed to handle missing values and ensure consistency across years and regions."
+    },
+    "dataSources": {
+      "title": "Data Sources",
+      "content": "All crime data is sourced from the Eurostat database, the statistical office of the European Union."
+    },
+    "scope": {
+      "title": "Scope & Limitations",
+      "content": "This project covers 25 crime categories across 39 European countries from 2008 to 2023. Note that reporting practices vary between countries, and some data points may be missing or not directly comparable."
+    },
+    "team": {
+      "title": "Project Team",
+      "content": "This project was developed as part of a data science portfolio, demonstrating skills in data processing, visualization, and web development."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "noData": "No data available",
+    "error": "An error occurred",
+    "compare": "Compare with...",
+    "viewDetails": "View Details"
+  },
+  "crimeCategories": {
+    "violence": "Violence",
+    "sexual": "Sexual Crimes",
+    "property": "Property",
+    "drugs": "Drugs",
+    "financial": "Financial",
+    "cyber": "Cyber",
+    "environmental": "Environmental"
+  }
+}
