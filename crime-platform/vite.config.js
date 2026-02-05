@@ -4,7 +4,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/CrimeProject/',
+  base: '/Crime_Analysis_In_Europe/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
