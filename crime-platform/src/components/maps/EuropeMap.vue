@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
+import { useTranslations } from '@/composables/useTranslations'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -14,8 +15,36 @@ const props = defineProps({
 
 const emit = defineEmits(['countryClick', 'countryHover'])
 
+// Expose map methods for parent component
+const zoomToCountry = (countryCode) => {
+  if (!geoJsonLayer.value || !map.value) return
+
+  geoJsonLayer.value.eachLayer((layer) => {
+    const code = layer.feature.properties.id || layer.feature.properties.code
+    if (code === countryCode) {
+      const bounds = layer.getBounds()
+      const center = bounds.getCenter()
+      map.value.flyTo(center, 5, {
+        duration: 1.2,
+        easeLinearity: 0.5
+      })
+    }
+  })
+}
+
+const resetZoom = () => {
+  if (!map.value) return
+  map.value.flyTo([54, 15], 4, {
+    duration: 1,
+    easeLinearity: 0.5
+  })
+}
+
+defineExpose({ zoomToCountry, resetZoom })
+
 const { t } = useI18n()
 const filtersStore = useFiltersStore()
+const { getCountryNameByCode } = useTranslations()
 
 const mapContainer = ref(null)
 const map = ref(null)
@@ -49,9 +78,7 @@ const getColor = (value, min, max) => {
 }
 
 const getCountryName = (code) => {
-  if (!countriesMetadata.value) return code
-  const country = countriesMetadata.value.find(c => c.code === code)
-  return country ? country.name : code
+  return getCountryNameByCode(code, countriesMetadata.value)
 }
 
 const getCrimeValue = (countryCode) => {
@@ -109,7 +136,7 @@ const highlightStyle = {
 
 const onEachFeature = (feature, layer) => {
   const countryCode = feature.properties.id || feature.properties.code
-  const countryName = feature.properties.name || getCountryName(countryCode)
+  const countryName = getCountryName(countryCode) || feature.properties.name
 
   layer.on({
     mouseover: (e) => {
@@ -227,7 +254,7 @@ onMounted(async () => {
       <div v-if="hoverInfo.value !== null" class="tooltip-value">
         {{ hoverInfo.value.toLocaleString() }}
         <span class="tooltip-unit">
-          {{ filtersStore.metric === 'per100k' ? 'per 100k' : '' }}
+          {{ filtersStore.metric === 'per100k' ? t('common.per100k') : '' }}
         </span>
       </div>
       <div v-else class="tooltip-no-data">
@@ -235,8 +262,9 @@ onMounted(async () => {
       </div>
       <div v-if="hoverInfo.comparison !== null" class="tooltip-comparison"
            :class="{ positive: hoverInfo.comparison > 0, negative: hoverInfo.comparison < 0 }">
-        {{ hoverInfo.comparison > 0 ? '+' : '' }}{{ hoverInfo.comparison }}% vs avg
+        {{ hoverInfo.comparison > 0 ? '+' : '' }}{{ hoverInfo.comparison }}% {{ t('common.vsAvg') }}
       </div>
+      <div class="tooltip-hint">{{ t('common.clickToExplore') }}</div>
     </div>
 
     <div class="map-legend">
@@ -244,8 +272,8 @@ onMounted(async () => {
       <div class="legend-scale">
         <div class="legend-bar"></div>
         <div class="legend-labels">
-          <span>Low</span>
-          <span>High</span>
+          <span>{{ t('common.low') }}</span>
+          <span>{{ t('common.high') }}</span>
         </div>
       </div>
     </div>
@@ -340,6 +368,20 @@ onMounted(async () => {
 
 .tooltip-comparison.negative {
   color: #38a169;
+}
+
+.tooltip-hint {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  color: #1a1a2e;
+  font-weight: 600;
+  background: #f0f9ff;
+  margin: 0.5rem -1rem -0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-align: center;
 }
 
 .map-legend {

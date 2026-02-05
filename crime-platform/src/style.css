@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Global Reset & Base Styles */
 *,
 *::before,
 *::after {
@@ -8,7 +7,6 @@
 }
 
 :root {
-  /* Colors */
   --color-primary: #1a1a2e;
   --color-primary-light: #2d2d44;
   --color-accent: #4fd1c5;
@@ -19,22 +17,21 @@
   --color-text-muted: #718096;
   --color-border: #e2e8f0;
 
-  /* Typography */
+
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
 
-  /* Border Radius */
+
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
 
-  /* Shadows */
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
@@ -62,7 +59,7 @@ body {
   width: 100%;
 }
 
-/* Typography */
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   font-weight: 600;
@@ -83,7 +80,7 @@ a:hover {
   color: var(--color-accent-hover);
 }
 
-/* Form Elements */
+
 button {
   font-family: inherit;
   font-size: inherit;
@@ -95,7 +92,7 @@ select, input {
   font-size: inherit;
 }
 
-/* Utility Classes */
+
 .text-sm {
   font-size: 0.875rem;
 }
@@ -104,7 +101,7 @@ select, input {
   color: var(--color-text-muted);
 }
 
-/* Transitions */
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -115,7 +112,7 @@ select, input {
   opacity: 0;
 }
 
-/* Leaflet Map Overrides */
+
 .leaflet-container {
   font-family: var(--font-family);
 }

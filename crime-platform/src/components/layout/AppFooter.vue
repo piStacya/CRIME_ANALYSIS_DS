@@ -5,7 +5,7 @@
   <footer class="app-footer">
     <div class="footer-container">
       <p class="copyright">
-        European Crime Analysis &copy; 2024 | Data source: Eurostat
+        European Crime Analysis &copy; 2025 | Data source: Eurostat
       </p>
     </div>
   </footer>

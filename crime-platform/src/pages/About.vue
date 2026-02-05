@@ -1,86 +1,80 @@
 <script setup>
-// About page - Methodology, data sources, team info
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
-  <div class="about">
-    <h1>{{ $t('about.title') }}</h1>
+  <div class="about-page">
+    <h1>{{ t('about.title') }}</h1>
 
-    <section class="section">
-      <h2>{{ $t('about.methodology.title') }}</h2>
-      <p>{{ $t('about.methodology.content') }}</p>
-    </section>
+    <div class="about-card">
+      <section class="section">
+        <h2>{{ t('about.overview.title') }}</h2>
+        <p>{{ t('about.overview.content') }}</p>
+      </section>
 
-    <section class="section">
-      <h2>{{ $t('about.dataSources.title') }}</h2>
-      <p>{{ $t('about.dataSources.content') }}</p>
-      <ul class="source-list">
-        <li>
-          <strong>Eurostat</strong> - European crime statistics database
-        </li>
-        <li>
-          <strong>Time period:</strong> 2008-2023 (16 years)
-        </li>
-        <li>
-          <strong>Coverage:</strong> 39 European countries
-        </li>
-        <li>
-          <strong>Categories:</strong> 25 crime types
-        </li>
-      </ul>
-    </section>
+      <section class="section">
+        <h2>{{ t('about.methodology.title') }}</h2>
+        <p>{{ t('about.methodology.content') }}</p>
+      </section>
 
-    <section class="section">
-      <h2>{{ $t('about.scope.title') }}</h2>
-      <p>{{ $t('about.scope.content') }}</p>
-    </section>
+      <section class="section">
+        <h2>{{ t('about.scope.title') }}</h2>
+        <p>{{ t('about.scope.content') }}</p>
+      </section>
 
-    <section class="section">
-      <h2>{{ $t('about.team.title') }}</h2>
-      <p>{{ $t('about.team.content') }}</p>
-    </section>
+      <section class="section">
+        <h2>{{ t('about.credits.title') }}</h2>
+        <p>{{ t('about.credits.content') }}</p>
+      </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.about {
-  max-width: 800px;
+.about-page {
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
 }
 
-.about h1 {
+.about-page h1 {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #1a1a2e;
-  margin-bottom: 2rem;
+  margin: 0 0 1.5rem;
+  padding-left: 15px;
+}
+
+.about-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .section {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.section:last-child {
+  margin-bottom: 0;
 }
 
 .section h2 {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 1rem;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e2e8f0;
+  padding-left: 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .section p {
   color: #4a5568;
   line-height: 1.7;
-}
-
-.source-list {
-  margin-top: 1rem;
-  padding-left: 1.5rem;
-}
-
-.source-list li {
-  color: #4a5568;
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 </style>

@@ -1,7 +1,33 @@
 {
+  "landing": {
+    "title": "European Crime Analysis",
+    "subtitle": "Explore crime patterns across 39 European countries through interactive visualizations. Discover trends, compare regions, and understand how crime has evolved from 2008 to 2023.",
+    "cta": "Start Exploring",
+    "stats": {
+      "countries": "Countries",
+      "crimeTypes": "Crime Types",
+      "years": "Years of Data"
+    },
+    "features": {
+      "maps": {
+        "title": "Interactive Maps",
+        "desc": "Visualize crime rates across Europe with color-coded maps and animations."
+      },
+      "trends": {
+        "title": "Trend Analysis",
+        "desc": "Track how crime patterns have changed over 16 years of data."
+      },
+      "compare": {
+        "title": "Country Profiles",
+        "desc": "Compare countries and discover unique criminal fingerprints."
+      }
+    },
+    "dataSource": "Data sourced from Eurostat · University of Tartu Data Science Project"
+  },
   "nav": {
     "home": "Home",
     "explorer": "Explorer",
+    "compare": "Compare",
     "about": "About"
   },
   "home": {
@@ -19,38 +45,59 @@
     "absolute": "Absolute Numbers"
   },
   "explorer": {
+    "title": "European Crime Data Explorer",
+    "subtitle": "Analyze crime patterns and trends across all European countries. Use the filters to explore different crime types, years, and metrics.",
     "map": "Interactive Map",
     "animatedMaps": "Animated Maps",
     "trends": "Crime Trends Over Time",
-    "fingerprints": "Criminal Fingerprints",
+    "trendsDesc": "This chart shows how the selected crime type has changed over 16 years across the top 5 countries with the highest average rates. The lines help identify long-term trends — whether crime is increasing, decreasing, or remaining stable in different regions.",
+    "animatedDesc": "Watch how {crime} rates have evolved across Europe from 2008 to 2023. Darker colors indicate higher crime rates per 100,000 inhabitants. This animation helps visualize geographical patterns and how they shift over time.",
+    "yearToYear": "Year-to-Year Change: Crime Rate Trends",
+    "yearToYearDesc": "This heatmap shows how crime rates changed from one year to the next across Europe. Green means crime decreased, red means crime increased. Values show percentage change compared to the previous year.",
+    "fingerprints": "Criminal Fingerprints: Country vs European Average",
+    "fingerprintsDesc": "This heatmap compares each country's crime rates to the European average (2019-2023 data). Green means below average, red means above average. Values show how many times higher or lower than the EU average (1.0 = exactly average). This visualization reveals each country's unique \"criminal fingerprint\" — their distinctive pattern of crime types.",
     "profiles": "Country Profiles",
     "data": "Data Table"
   },
   "about": {
     "title": "About This Project",
+    "overview": {
+      "title": "Overview",
+      "content": "This project explores crime trends across European countries using publicly available data from Eurostat and provides a reproducible exploratory analysis of crime patterns across Europe. The objective was to apply core data science skills — data cleaning, preprocessing, exploratory analysis, visualization, and interpretation — to produce meaningful insights about crime patterns."
+    },
     "methodology": {
       "title": "Methodology",
-      "content": "This analysis uses official crime statistics from Eurostat, normalized per 100,000 inhabitants to allow fair comparison between countries of different population sizes. Data has been cleaned and processed to handle missing values and ensure consistency across years and regions."
-    },
-    "dataSources": {
-      "title": "Data Sources",
-      "content": "All crime data is sourced from the Eurostat database, the statistical office of the European Union."
+      "content": "The project uses crime categories defined by the ICCS (International Classification of Crime Statistics) framework, allowing consistent comparison across countries and years. Crime rates are normalized per 100,000 inhabitants to enable fair comparison between countries of different population sizes. This project is purely descriptive and does not make causal claims."
     },
     "scope": {
       "title": "Scope & Limitations",
-      "content": "This project covers 25 crime categories across 39 European countries from 2008 to 2023. Note that reporting practices vary between countries, and some data points may be missing or not directly comparable."
+      "content": "This project covers 25 crime categories across 39 European countries, mainly from 2008 to 2023, but also using historic data from 1993-2007. Note that reporting practices and legal definitions vary between countries, which may affect comparability. Some data points may be missing or show anomalies due to differences in national reporting systems."
     },
-    "team": {
-      "title": "Project Team",
-      "content": "This project was developed as part of a data science portfolio, demonstrating skills in data processing, visualization, and web development."
+    "credits": {
+      "title": "Credits",
+      "content": "This project was developed as part of the Data Science course at the University of Tartu. Crime data sourced from Eurostat crime and criminal justice datasets. Geographic boundaries provided by EuroGeographics."
     }
   },
   "common": {
     "loading": "Loading...",
     "noData": "No data available",
     "error": "An error occurred",
-    "compare": "Compare with...",
-    "viewDetails": "View Details"
+    "compare": "Compare",
+    "viewDetails": "View Details",
+    "backToMap": "Back to Map",
+    "crimeRate": "Crime Rate",
+    "per100k": "per 100k",
+    "low": "Low",
+    "high": "High",
+    "clickToExplore": "Click to explore",
+    "europeanAverage": "European Average",
+    "year": "Year",
+    "vsAvg": "vs avg",
+    "crimeTypeHeader": "Crime Type",
+    "belowAvg": "Below avg",
+    "aboveAvg": "Above avg",
+    "decrease": "Decrease",
+    "increase": "Increase"
   },
   "crimeCategories": {
     "violence": "Violence",
@@ -60,5 +107,45 @@
     "financial": "Financial",
     "cyber": "Cyber",
     "environmental": "Environmental"
+  },
+  "country": {
+    "subtitle": "Detailed crime statistics and analysis",
+    "topCrimes": "Top 5 Most Common Crimes",
+    "topCrimesDesc": "The most frequently recorded crime types in {country} in {year}, measured per 100,000 inhabitants.",
+    "fingerprint": "Criminal Fingerprint",
+    "fingerprintDesc": "{country}'s top 15 crime types compared to the European average. Values above 1.0 mean higher than average, below 1.0 means lower.",
+    "allCrimes": "All Crime Types",
+    "allCrimesDesc": "Complete list of all recorded crime types in {country}, showing the rate per 100,000 inhabitants and comparison to European average.",
+    "crimeOfYear": "Crime of the Year (2008-2023)",
+    "crimeOfYearDesc": "The most common crime type in {country} for each year. Different colors represent different crime types. Hover over bars to see details.",
+    "trendTitle": "Crime Trend Over Time",
+    "trendDesc": "How the selected crime type has changed in {country} from 2008 to 2023, compared to the European average.",
+    "selectCrime": "Select crime type:",
+    "rateHeader": "Rate (per 100k)",
+    "vsEU": "vs EU"
+  },
+  "compare": {
+    "title": "Compare Countries",
+    "subtitle": "Select 2-5 countries to compare their crime statistics side-by-side",
+    "selectCountries": "Select Countries",
+    "addCountry": "Add",
+    "searchPlaceholder": "Search countries...",
+    "selectedCount": "{count} countries selected",
+    "minCountries": "Select at least 2 countries to compare",
+    "maxCountries": "Maximum 5 countries allowed",
+    "clearAll": "Clear all",
+    "topCrimes": "Top Crimes Comparison",
+    "topCrimesDesc": "Top 5 crime types by average rate across selected countries in {year}, measured per 100,000 inhabitants.",
+    "fingerprints": "Criminal Fingerprints",
+    "fingerprintsDesc": "Crime profiles compared to European average. Values above 1.0 indicate higher than EU average.",
+    "trends": "Crime Trends Over Time",
+    "trendsDesc": "How the selected crime type has changed from 2008 to 2023 across selected countries.",
+    "dataTable": "Detailed Comparison",
+    "dataTableDesc": "Complete comparison of all crime types. Click column headers to sort.",
+    "crimeType": "Crime Type",
+    "euAverage": "EU Average",
+    "noData": "N/A",
+    "aboveAvg": "above EU avg",
+    "belowAvg": "below EU avg"
   }
 }

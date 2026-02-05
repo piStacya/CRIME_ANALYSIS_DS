@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
+import { useTranslations } from '@/composables/useTranslations'
 
 const props = defineProps({
   hideYear: {
@@ -12,6 +13,7 @@ const props = defineProps({
 
 const { t } = useI18n()
 const filtersStore = useFiltersStore()
+const { getCrimeName, getCategoryLabel } = useTranslations()
 
 const crimesMetadata = ref([])
 const categoriesMetadata = ref({})
@@ -21,8 +23,7 @@ const groupedCrimes = computed(() => {
 
   for (const [key, category] of Object.entries(categoriesMetadata.value)) {
     groups[key] = {
-      label: category.label,
-      labelEt: category.labelEt,
+      label: getCategoryLabel(category),
       crimes: crimesMetadata.value.filter(c => c.category === key)
     }
   }
@@ -69,7 +70,7 @@ onMounted(async () => {
             :key="crime.code"
             :value="crime.code"
           >
-            {{ crime.name }}
+            {{ getCrimeName(crime) }}
           </option>
         </optgroup>
       </select>

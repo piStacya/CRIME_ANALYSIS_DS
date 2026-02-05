@@ -22,11 +22,14 @@ function switchLanguage(langCode) {
       </router-link>
 
       <nav class="main-nav">
-        <router-link to="/" class="nav-link">
+        <router-link to="/home" class="nav-link">
           {{ t('nav.home') }}
         </router-link>
         <router-link to="/explorer" class="nav-link">
           {{ t('nav.explorer') }}
+        </router-link>
+        <router-link to="/compare" class="nav-link">
+          {{ t('nav.compare') }}
         </router-link>
         <router-link to="/about" class="nav-link">
           {{ t('nav.about') }}

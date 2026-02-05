@@ -2,126 +2,151 @@
   {
     "code": "ICCS0101",
     "name": "Intentional homicide",
+    "nameEt": "Tahtlik tapmine",
     "category": "violence"
   },
   {
     "code": "ICCS0102",
     "name": "Attempted intentional homicide",
+    "nameEt": "Tahtliku tapmise katse",
     "category": "violence"
   },
   {
     "code": "ICCS020111",
     "name": "Serious assault",
+    "nameEt": "Raske kehavigastus",
     "category": "violence"
   },
   {
     "code": "ICCS020221",
     "name": "Kidnapping",
+    "nameEt": "Inimrööv",
     "category": "violence"
   },
   {
     "code": "ICCS0301",
     "name": "Sexual violence",
+    "nameEt": "Seksuaalvägivald",
     "category": "sexual"
   },
   {
     "code": "ICCS03011",
     "name": "Rape",
+    "nameEt": "Vägistamine",
     "category": "sexual"
   },
   {
     "code": "ICCS03012",
     "name": "Sexual assault",
+    "nameEt": "Seksuaalne rünnak",
     "category": "sexual"
   },
   {
     "code": "ICCS030221",
     "name": "Child pornography",
+    "nameEt": "Lasteporno",
     "category": "sexual"
   },
   {
     "code": "ICCS0302",
     "name": "Sexual exploitation",
+    "nameEt": "Seksuaalne ekspluateerimine",
     "category": "sexual"
   },
   {
     "code": "ICCS0401",
     "name": "Robbery",
+    "nameEt": "Röövimine",
     "category": "violence"
   },
   {
     "code": "ICCS0501",
     "name": "Burglary",
+    "nameEt": "Sissemurdmine",
     "category": "property"
   },
   {
     "code": "ICCS05012",
     "name": "Burglary of private residential premises",
+    "nameEt": "Sissemurdmine eluruumi",
     "category": "property"
   },
   {
     "code": "ICCS0502",
     "name": "Theft",
+    "nameEt": "Vargus",
     "category": "property"
   },
   {
     "code": "ICCS05021",
     "name": "Theft of a motorized vehicle",
+    "nameEt": "Mootorsõiduki vargus",
     "category": "property"
   },
   {
     "code": "ICCS0601",
     "name": "Unlawful acts involving controlled drugs",
+    "nameEt": "Narkootikumidega seotud kuriteod",
     "category": "drugs"
   },
   {
     "code": "ICCS0701",
     "name": "Fraud",
+    "nameEt": "Kelmus",
     "category": "financial"
   },
   {
     "code": "ICCS0703",
     "name": "Corruption",
+    "nameEt": "Korruptsioon",
     "category": "financial"
   },
   {
     "code": "ICCS07031",
     "name": "Bribery",
+    "nameEt": "Altkäemaks",
     "category": "financial"
   },
   {
     "code": "ICCS07041",
     "name": "Money laundering",
+    "nameEt": "Rahapesu",
     "category": "financial"
   },
   {
     "code": "ICCS0903",
     "name": "Acts against computer systems",
+    "nameEt": "Arvutisüsteemide vastased kuriteod",
     "category": "cyber"
   },
   {
     "code": "ICCS09051",
     "name": "Organized criminal group participation",
+    "nameEt": "Kuritegeliku ühenduse tegevuses osalemine",
     "category": "cyber"
   },
   {
     "code": "ICCS1001",
     "name": "Environmental pollution crimes",
+    "nameEt": "Keskkonna saastamise kuriteod",
     "category": "environmental"
   },
   {
     "code": "ICCS1002",
     "name": "Waste dumping crimes",
+    "nameEt": "Jäätmete ebaseaduslik ladestamine",
     "category": "environmental"
   },
   {
     "code": "ICCS1003",
     "name": "Protected species crimes",
+    "nameEt": "Kaitstud liikide vastased kuriteod",
     "category": "environmental"
   },
   {
     "code": "ICCS1004",
     "name": "Natural resource crimes",
+    "nameEt": "Loodusvarade kuriteod",
     "category": "environmental"
   }
 ]

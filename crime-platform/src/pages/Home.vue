@@ -1,21 +1,23 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useFiltersStore } from '@/stores/filters'
 import EuropeMap from '@/components/maps/EuropeMap.vue'
 import CrimeFilters from '@/components/filters/CrimeFilters.vue'
 
 const { t } = useI18n()
+const filtersStore = useFiltersStore()
 
 const selectedCountry = ref(null)
-const showCountryModal = ref(false)
+const showModal = ref(false)
 
 const handleCountryClick = (country) => {
   selectedCountry.value = country
-  showCountryModal.value = true
+  showModal.value = true
 }
 
 const closeModal = () => {
-  showCountryModal.value = false
+  showModal.value = false
   selectedCountry.value = null
 }
 </script>
@@ -38,35 +40,31 @@ const closeModal = () => {
       />
     </section>
 
+    <!-- Modal -->
     <Teleport to="body">
-      <div v-if="showCountryModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-content">
-          <button class="modal-close" @click="closeModal">&times;</button>
-          <h2>{{ selectedCountry?.name }}</h2>
-          <div class="country-stats">
-            <div class="stat-item">
-              <span class="stat-label">Current Value</span>
+      <Transition name="fade">
+        <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+          <div class="modal-box">
+            <button class="modal-close" @click="closeModal">&times;</button>
+            <h2>{{ selectedCountry?.name }}</h2>
+            <div class="modal-stat">
+              <span class="stat-label">{{ t('common.crimeRate') }}</span>
               <span class="stat-value">
                 {{ selectedCountry?.value?.toLocaleString() ?? t('common.noData') }}
+                <span v-if="selectedCountry?.value && filtersStore.metric === 'per100k'" class="stat-unit">{{ t('common.per100k') }}</span>
               </span>
             </div>
-          </div>
-          <div class="modal-actions">
-            <router-link
-              :to="`/country/${selectedCountry?.code}`"
-              class="btn-primary"
-            >
-              {{ t('common.viewDetails') }}
-            </router-link>
-            <router-link
-              to="/explorer"
-              class="btn-secondary"
-            >
-              View All Europe
-            </router-link>
+            <div class="modal-actions">
+              <router-link
+                :to="`/country/${selectedCountry?.code}`"
+                class="btn primary"
+              >
+                {{ t('common.viewDetails') }}
+              </router-link>
+            </div>
           </div>
         </div>
-      </div>
+      </Transition>
     </Teleport>
   </div>
 </template>
@@ -79,21 +77,19 @@ const closeModal = () => {
 }
 
 .welcome-banner {
-  text-align: left;
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .welcome-banner h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 600;
   color: #1a1a2e;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.25rem;
 }
 
 .welcome-banner p {
   color: #718096;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  margin: 0;
 }
 
 .filters-section {
@@ -111,6 +107,7 @@ const closeModal = () => {
   overflow: hidden;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -124,24 +121,24 @@ const closeModal = () => {
   z-index: 2000;
 }
 
-.modal-content {
+.modal-box {
   background: white;
   border-radius: 0.75rem;
-  padding: 2rem;
-  max-width: 400px;
-  width: 90%;
+  padding: 1.75rem;
+  width: 320px;
+  max-width: 90%;
   position: relative;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #718096;
+  color: #94a3b8;
   cursor: pointer;
   line-height: 1;
 }
@@ -150,70 +147,102 @@ const closeModal = () => {
   color: #1a1a2e;
 }
 
-.modal-content h2 {
-  font-size: 1.5rem;
+.modal-box h2 {
+  font-size: 1.375rem;
+  font-weight: 600;
   color: #1a1a2e;
-  margin-bottom: 1.5rem;
+  margin: 0 0 1rem;
+  padding-right: 1.5rem;
 }
 
-.country-stats {
-  margin-bottom: 1.5rem;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #e2e8f0;
+.modal-stat {
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .stat-label {
-  color: #718096;
-  font-size: 0.875rem;
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: 0.25rem;
 }
 
 .stat-value {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #1a1a2e;
+}
+
+.stat-unit {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #64748b;
 }
 
 .modal-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
-.btn-primary {
-  display: inline-block;
+.btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+}
+
+.btn.primary {
   background: #1a1a2e;
   color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background 0.2s ease;
 }
 
-.btn-primary:hover {
+.btn.primary:hover {
   background: #2d2d44;
-  color: white;
 }
 
-.btn-secondary {
-  display: inline-block;
+.btn.secondary {
   background: white;
-  color: #1a1a2e;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  font-weight: 500;
+  color: #64748b;
   border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
 }
 
-.btn-secondary:hover {
-  background: #f7fafc;
-  border-color: #cbd5e0;
+.btn.secondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1a1a2e;
+}
+
+/* Animation */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active .modal-box,
+.fade-leave-active .modal-box {
+  transition: transform 0.25s ease;
+}
+
+.fade-enter-from .modal-box,
+.fade-leave-to .modal-box {
+  transform: scale(0.95);
 }
 </style>

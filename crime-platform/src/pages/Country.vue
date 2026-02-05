@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
+import { useTranslations } from '@/composables/useTranslations'
 import { Line, Radar, Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -34,6 +35,7 @@ ChartJS.register(
 const route = useRoute()
 const { t } = useI18n()
 const filtersStore = useFiltersStore()
+const { getCountryName: getTranslatedCountryName, getCrimeName } = useTranslations()
 
 const loading = ref(true)
 const countryCode = computed(() => route.params.code)
@@ -45,7 +47,7 @@ const countriesMetadata = ref(null)
 const countryName = computed(() => {
   if (!countriesMetadata.value) return countryCode.value
   const country = countriesMetadata.value.find(c => c.code === countryCode.value)
-  return country ? country.name : countryCode.value
+  return country ? getTranslatedCountryName(country) : countryCode.value
 })
 
 const colors = ['#d73027', '#fc8d59', '#fee08b', '#d9ef8b', '#91cf60', '#1a9850', '#4575b4', '#74add1']
@@ -85,15 +87,46 @@ const topCrimes = computed(() => {
 })
 
 const topCrimesForRadar = computed(() => {
-  return [...topCrimes.value].sort((a, b) => b.indexScore - a.indexScore)
+  if (!crimesMetadata.value || !crimeData.value) return []
+
+  return crimesMetadata.value
+    .map(crime => {
+      const value = getCountryValue(crime.code, filtersStore.selectedYear)
+      const europeAvg = calculateEuropeAverage(crime.code, filtersStore.selectedYear)
+      const indexScore = europeAvg > 0 && value !== null ? Math.min(value / europeAvg, 3.5) : 0
+      return { ...crime, value, europeAvg, indexScore }
+    })
+    .filter(c => c.value !== null)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 15)
+})
+
+const crimeOfTheYear = computed(() => {
+  if (!crimesMetadata.value || !crimeData.value) return []
+
+  return filtersStore.years.map(year => {
+    let maxCrime = null
+    let maxValue = -1
+
+    for (const crime of crimesMetadata.value) {
+      const value = getCountryValue(crime.code, year)
+      if (value !== null && value > maxValue) {
+        maxValue = value
+        maxCrime = { year, crime: crime.name, code: crime.code, value }
+      }
+    }
+
+    return maxCrime
+  }).filter(c => c !== null)
 })
 
 const chartColors = ['#d73027', '#fc8d59', '#fee08b', '#91cf60', '#1a9850']
 
 const barChartData = computed(() => ({
   labels: topCrimes.value.map(c => {
-    const words = c.name.split(' ')
-    if (words.length <= 3) return c.name
+    const name = getCrimeName(c)
+    const words = name.split(' ')
+    if (words.length <= 3) return name
     const mid = Math.ceil(words.length / 2)
     return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
   }),
@@ -113,8 +146,8 @@ const barChartOptions = computed(() => ({
     legend: { display: false },
     tooltip: {
       callbacks: {
-        title: (ctx) => topCrimes.value[ctx[0].dataIndex]?.name || '',
-        label: (ctx) => `${ctx.parsed.x.toFixed(2)} per 100k`
+        title: (ctx) => getCrimeName(topCrimes.value[ctx[0].dataIndex]) || '',
+        label: (ctx) => `${ctx.parsed.x.toFixed(2)} ${t('common.per100k')}`
       }
     }
   },
@@ -148,7 +181,7 @@ const trendChartData = computed(() => {
         pointRadius: 4
       },
       {
-        label: 'European Average',
+        label: t('common.europeanAverage'),
         data: europeValues,
         borderColor: '#4575b4',
         backgroundColor: '#4575b4',
@@ -182,8 +215,9 @@ const radarChartData = computed(() => {
 
   return {
     labels: topCrimesForRadar.value.map(c => {
-      const words = c.name.split(' ')
-      if (words.length <= 2) return c.name
+      const name = getCrimeName(c)
+      const words = name.split(' ')
+      if (words.length <= 2) return name
       const mid = Math.ceil(words.length / 2)
       return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
     }),
@@ -197,7 +231,7 @@ const radarChartData = computed(() => {
         pointBackgroundColor: '#d73027'
       },
       {
-        label: 'European Average',
+        label: t('common.europeanAverage'),
         data: topCrimesForRadar.value.map(() => 1),
         backgroundColor: 'rgba(69, 117, 180, 0.1)',
         borderColor: '#4575b4',
@@ -215,7 +249,7 @@ const radarChartOptions = computed(() => ({
     legend: { position: 'top' },
     tooltip: {
       callbacks: {
-        title: (ctx) => topCrimesForRadar.value[ctx[0].dataIndex]?.name || '',
+        title: (ctx) => getCrimeName(topCrimesForRadar.value[ctx[0].dataIndex]) || '',
         label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.r.toFixed(2)}x`
       }
     }
@@ -226,9 +260,63 @@ const radarChartOptions = computed(() => ({
       max: 3.5,
       ticks: { stepSize: 1, callback: (v) => v === 1 ? 'AVG' : `${v}x` },
       pointLabels: {
-        font: { size: 10 }
+        font: { size: 9 }
       }
     }
+  }
+}))
+
+const crimeColorsByCode = {
+  'ICCS0502': '#1a9850',
+  'ICCS0501': '#91cf60',
+  'ICCS0601': '#d9ef8b',
+  'ICCS0701': '#fee08b',
+  'ICCS0401': '#fc8d59',
+  'ICCS020111': '#d73027',
+  'ICCS0301': '#a50026',
+  'ICCS0101': '#4575b4'
+}
+
+const getColorForCrime = (crimeCode) => {
+  return crimeColorsByCode[crimeCode] || '#718096'
+}
+
+const crimeCodesWithColors = Object.keys(crimeColorsByCode)
+
+const crimeOfYearChartData = computed(() => {
+  if (!crimeOfTheYear.value.length) return { labels: [], datasets: [] }
+
+  return {
+    labels: crimeOfTheYear.value.map(c => c.year),
+    datasets: [{
+      label: t('country.crimeOfYear'),
+      data: crimeOfTheYear.value.map(c => c.value),
+      backgroundColor: crimeOfTheYear.value.map(c => getColorForCrime(c.code)),
+      borderRadius: 4
+    }]
+  }
+})
+
+const crimeOfYearChartOptions = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        title: (ctx) => `${t('common.year')} ${crimeOfTheYear.value[ctx[0].dataIndex]?.year}`,
+        label: (ctx) => {
+          const crimeData = crimeOfTheYear.value[ctx.dataIndex]
+          const crime = crimesMetadata.value?.find(c => c.code === crimeData?.code)
+          const crimeName = crime ? getCrimeName(crime) : crimeData?.crime
+          return [`${t('filters.crimeType')}: ${crimeName}`, `${t('country.rateHeader')}: ${crimeData?.value?.toFixed(2)}`]
+        }
+      }
+    }
+  },
+  scales: {
+    x: { grid: { display: false } },
+    y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
   }
 }))
 
@@ -271,25 +359,24 @@ onMounted(async () => {
 
     <template v-else>
       <header class="country-header">
-        <router-link to="/" class="back-link">← Back to Map</router-link>
+        <router-link to="/" class="back-link">← {{ t('common.backToMap') }}</router-link>
         <div class="header-row">
           <h1>{{ countryName }}</h1>
           <div class="year-selector">
-            <label>Year:</label>
+            <label>{{ t('common.year') }}:</label>
             <select :value="filtersStore.selectedYear" @change="filtersStore.setYear(Number($event.target.value))">
               <option v-for="year in filtersStore.years" :key="year" :value="year">{{ year }}</option>
             </select>
           </div>
         </div>
-        <p class="subtitle">Detailed crime statistics and analysis</p>
+        <p class="subtitle">{{ t('country.subtitle') }}</p>
       </header>
 
       <div class="content-grid">
         <section class="viz-section bar-section">
-          <h2>Top 5 Most Common Crimes</h2>
+          <h2>{{ t('country.topCrimes') }}</h2>
           <p class="description">
-            The most frequently recorded crime types in {{ countryName }} in {{ filtersStore.selectedYear }},
-            measured per 100,000 inhabitants.
+            {{ t('country.topCrimesDesc', { country: countryName, year: filtersStore.selectedYear }) }}
           </p>
           <div class="chart-container bar-chart">
             <Bar :data="barChartData" :options="barChartOptions" />
@@ -297,10 +384,9 @@ onMounted(async () => {
         </section>
 
         <section class="viz-section">
-          <h2>Crime Profile vs European Average - {{ filtersStore.selectedYear }}</h2>
+          <h2>{{ t('country.fingerprint') }} - {{ filtersStore.selectedYear }}</h2>
           <p class="description">
-            How {{ countryName }}'s top 5 crimes compare to the European average.
-            Values above 1.0 mean higher than average, below 1.0 means lower.
+            {{ t('country.fingerprintDesc', { country: countryName }) }}
           </p>
           <div class="chart-container radar-chart">
             <Radar :data="radarChartData" :options="radarChartOptions" />
@@ -308,24 +394,23 @@ onMounted(async () => {
         </section>
 
         <section class="viz-section full-width">
-          <h2>All Crime Types - {{ filtersStore.selectedYear }}</h2>
+          <h2>{{ t('country.allCrimes') }} - {{ filtersStore.selectedYear }}</h2>
           <p class="description">
-            Complete list of all recorded crime types in {{ countryName }}, showing the rate per 100,000 inhabitants
-            and comparison to European average.
+            {{ t('country.allCrimesDesc', { country: countryName }) }}
           </p>
           <div class="table-container">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Crime Type</th>
-                  <th>Rate (per 100k)</th>
-                  <th>EU Average</th>
-                  <th>vs EU</th>
+                  <th>{{ t('compare.crimeType') }}</th>
+                  <th>{{ t('country.rateHeader') }}</th>
+                  <th>{{ t('compare.euAverage') }}</th>
+                  <th>{{ t('country.vsEU') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="crime in allCrimesTable" :key="crime.code">
-                  <td>{{ crime.name }}</td>
+                  <td>{{ getCrimeName(crime) }}</td>
                   <td>{{ crime.value.toFixed(2) }}</td>
                   <td>{{ crime.europeAvg.toFixed(2) }}</td>
                   <td class="ratio" :class="{ high: crime.ratio > 1.2, low: crime.ratio < 0.8 }">
@@ -338,16 +423,31 @@ onMounted(async () => {
         </section>
 
         <section class="viz-section full-width">
-          <h2>Crime Trend Over Time</h2>
+          <h2>{{ t('country.crimeOfYear') }}</h2>
           <p class="description">
-            How the selected crime type has changed in {{ countryName }} from 2008 to 2023,
-            compared to the European average.
+            {{ t('country.crimeOfYearDesc', { country: countryName }) }}
+          </p>
+          <div class="crime-legend">
+            <span v-for="code in crimeCodesWithColors" :key="code" class="legend-item">
+              <span class="legend-color" :style="{ backgroundColor: crimeColorsByCode[code] }"></span>
+              {{ crimesMetadata?.find(c => c.code === code) ? getCrimeName(crimesMetadata.find(c => c.code === code)) : code }}
+            </span>
+          </div>
+          <div class="chart-container coty-chart">
+            <Bar :data="crimeOfYearChartData" :options="crimeOfYearChartOptions" />
+          </div>
+        </section>
+
+        <section class="viz-section full-width">
+          <h2>{{ t('country.trendTitle') }}</h2>
+          <p class="description">
+            {{ t('country.trendDesc', { country: countryName }) }}
           </p>
           <div class="crime-selector">
-            <label>Select crime type:</label>
+            <label>{{ t('country.selectCrime') }}</label>
             <select :value="filtersStore.selectedCrimeType" @change="filtersStore.setCrimeType($event.target.value)">
               <option v-for="crime in crimesMetadata" :key="crime.code" :value="crime.code">
-                {{ crime.name }}
+                {{ getCrimeName(crime) }}
               </option>
             </select>
           </div>
@@ -374,7 +474,7 @@ onMounted(async () => {
 }
 
 .country-header {
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .back-link {
@@ -396,7 +496,7 @@ onMounted(async () => {
 }
 
 .country-header h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #1a1a2e;
   margin: 0;
 }
@@ -474,8 +574,33 @@ onMounted(async () => {
 }
 
 .bar-chart { height: 100%; min-height: 220px; }
-.radar-chart { height: 350px; }
+.radar-chart { height: 400px; }
 .trend-chart { height: 300px; }
+.coty-chart { height: 280px; }
+
+.crime-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #f7fafc;
+  border-radius: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #4a5568;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
 
 .crime-selector {
   display: flex;

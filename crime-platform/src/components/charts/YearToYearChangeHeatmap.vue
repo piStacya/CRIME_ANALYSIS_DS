@@ -4,31 +4,34 @@ import { useI18n } from 'vue-i18n'
 import { useTranslations } from '@/composables/useTranslations'
 
 const { t } = useI18n()
-const { getCrimeName, getCountryName } = useTranslations()
+const { getCrimeName } = useTranslations()
 
 const loading = ref(true)
 const crimeData = ref(null)
 const crimesMetadata = ref(null)
-const countriesMetadata = ref(null)
 
 const tooltip = ref({
   show: false,
   x: 0,
   y: 0,
   crime: '',
-  country: '',
-  value: null
+  year: '',
+  ratio: null,
+  prevValue: null,
+  currValue: null
 })
 
-const showTooltip = (event, crime, country, value) => {
+const showTooltip = (event, crime, year, ratio, prevValue, currValue) => {
   const rect = event.target.getBoundingClientRect()
   tooltip.value = {
     show: true,
     x: rect.left + rect.width / 2,
     y: rect.top - 10,
     crime,
-    country,
-    value
+    year,
+    ratio,
+    prevValue,
+    currValue
   }
 }
 
@@ -36,125 +39,101 @@ const hideTooltip = () => {
   tooltip.value.show = false
 }
 
-const calculateEuropeAverage = (crimeCode) => {
-  if (!crimeData.value) return 0
+const years = [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
 
-  const recentYears = [2019, 2020, 2021, 2022, 2023]
-  let total = 0
-  let count = 0
-
-  for (const year of recentYears) {
-    const yearData = crimeData.value[year]
-    if (!yearData) continue
-
-    const crimeTypeData = yearData[crimeCode]
-    if (!crimeTypeData) continue
-
-    const values = Object.values(crimeTypeData.per100k || {})
-    for (const value of values) {
-      if (value !== null && value !== undefined) {
-        total += value
-        count++
-      }
-    }
-  }
-
-  return count > 0 ? total / count : 0
-}
-
-const calculateCountryAverage = (crimeCode, countryCode) => {
+const calculateEuropeAverage = (crimeCode, year) => {
   if (!crimeData.value) return null
-
-  const recentYears = [2019, 2020, 2021, 2022, 2023]
-  let total = 0
-  let count = 0
-
-  for (const year of recentYears) {
-    const yearData = crimeData.value[year]
-    if (!yearData) continue
-
-    const crimeTypeData = yearData[crimeCode]
-    if (!crimeTypeData) continue
-
-    const value = crimeTypeData.per100k?.[countryCode]
-    if (value !== null && value !== undefined) {
-      total += value
-      count++
-    }
-  }
-
-  return count > 0 ? total / count : null
+  const yearData = crimeData.value[year]
+  if (!yearData) return null
+  const crimeTypeData = yearData[crimeCode]
+  if (!crimeTypeData) return null
+  const values = Object.values(crimeTypeData.per100k || {}).filter(v => v !== null)
+  return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : null
 }
 
 const heatmapData = computed(() => {
-  if (!crimeData.value || !crimesMetadata.value || !countriesMetadata.value) {
-    return { crimes: [], countries: [], matrix: [] }
+  if (!crimeData.value || !crimesMetadata.value) {
+    return { crimes: [], years: [], matrix: [], values: [] }
   }
 
-  const crimes = crimesMetadata.value
-
-  const countryCodes = countriesMetadata.value.map(c => c.code)
-
+  const crimes = crimesMetadata.value.slice(0, 15)
   const matrix = []
+  const values = []
 
   for (const crime of crimes) {
-    const europeAvg = calculateEuropeAverage(crime.code)
     const row = []
+    const valueRow = []
 
-    for (const countryCode of countryCodes) {
-      const countryAvg = calculateCountryAverage(crime.code, countryCode)
+    for (let i = 0; i < years.length; i++) {
+      const year = years[i]
+      const currAvg = calculateEuropeAverage(crime.code, year)
 
-      if (countryAvg === null || europeAvg === 0) {
-        row.push(null)
+      if (i === 0) {
+        row.push(1)
+        valueRow.push({ prev: null, curr: currAvg })
       } else {
-        row.push(Math.min(countryAvg / europeAvg, 3))
+        const prevYear = years[i - 1]
+        const prevAvg = calculateEuropeAverage(crime.code, prevYear)
+
+        if (currAvg !== null && prevAvg !== null && prevAvg > 0) {
+          const ratio = currAvg / prevAvg
+          row.push(ratio)
+          valueRow.push({ prev: prevAvg, curr: currAvg })
+        } else {
+          row.push(null)
+          valueRow.push({ prev: prevAvg, curr: currAvg })
+        }
       }
     }
 
     matrix.push(row)
+    values.push(valueRow)
   }
 
   return {
     crimes: crimes.map(c => getCrimeName(c)),
-    countries: countryCodes.map(code => {
-      const country = countriesMetadata.value.find(c => c.code === code)
-      return country ? getCountryName(country) : code
-    }),
-    countryCodes,
-    matrix
+    years,
+    matrix,
+    values
   }
 })
 
 const getCellColor = (value) => {
   if (value === null) return '#f0f0f0'
+  if (value === 1) return '#ffffff'
 
-  if (value < 0.5) return '#1a9850'
-  if (value < 0.75) return '#91cf60'
+  if (value < 0.85) return '#1a9850'
+  if (value < 0.95) return '#91cf60'
   if (value < 1.0) return '#d9ef8b'
-  if (value < 1.25) return '#fee08b'
-  if (value < 1.75) return '#fc8d59'
-  if (value < 2.5) return '#d73027'
-  return '#a50026'
+  if (value <= 1.0) return '#ffffbf'
+  if (value < 1.05) return '#fee08b'
+  if (value < 1.15) return '#fc8d59'
+  return '#d73027'
 }
 
 const getTextColor = (value) => {
   if (value === null) return '#999'
-  if (value < 0.75 || value > 1.75) return 'white'
+  if (value < 0.85 || value > 1.15) return 'white'
   return '#333'
+}
+
+const formatRatio = (value) => {
+  if (value === null) return '-'
+  if (value === 1) return '—'
+  const percent = ((value - 1) * 100).toFixed(0)
+  return percent > 0 ? `+${percent}%` : `${percent}%`
 }
 
 onMounted(async () => {
   try {
     const base = import.meta.env.BASE_URL
-    const [crimeRes, crimesRes, countriesRes] = await Promise.all([
+    const [crimeRes, crimesRes] = await Promise.all([
       fetch(`${base}data/map-data.json`),
-      fetch(`${base}data/crimes.json`),
-      fetch(`${base}data/countries.json`)
+      fetch(`${base}data/crimes.json`)
     ])
 
     crimeData.value = await crimeRes.json()
     crimesMetadata.value = await crimesRes.json()
-    countriesMetadata.value = await countriesRes.json()
     loading.value = false
   } catch (err) {
     console.error('Error loading heatmap data:', err)
@@ -175,11 +154,11 @@ onMounted(async () => {
             <tr>
               <th class="crime-header">{{ t('common.crimeTypeHeader') }}</th>
               <th
-                v-for="(country, idx) in heatmapData.countries"
-                :key="idx"
-                class="country-header"
+                v-for="year in heatmapData.years"
+                :key="year"
+                class="year-header"
               >
-                {{ country }}
+                {{ year }}
               </th>
             </tr>
           </thead>
@@ -187,17 +166,24 @@ onMounted(async () => {
             <tr v-for="(crime, crimeIdx) in heatmapData.crimes" :key="crimeIdx">
               <td class="crime-label">{{ crime }}</td>
               <td
-                v-for="(value, countryIdx) in heatmapData.matrix[crimeIdx]"
-                :key="countryIdx"
+                v-for="(value, yearIdx) in heatmapData.matrix[crimeIdx]"
+                :key="yearIdx"
                 class="heatmap-cell"
                 :style="{
                   backgroundColor: getCellColor(value),
                   color: getTextColor(value)
                 }"
-                @mouseenter="showTooltip($event, crime, heatmapData.countries[countryIdx], value)"
+                @mouseenter="showTooltip(
+                  $event,
+                  crime,
+                  heatmapData.years[yearIdx],
+                  value,
+                  heatmapData.values[crimeIdx][yearIdx].prev,
+                  heatmapData.values[crimeIdx][yearIdx].curr
+                )"
                 @mouseleave="hideTooltip"
               >
-                {{ value !== null ? value.toFixed(1) : '-' }}
+                {{ formatRatio(value) }}
               </td>
             </tr>
           </tbody>
@@ -205,11 +191,11 @@ onMounted(async () => {
       </div>
 
       <div class="heatmap-legend">
-        <span class="legend-label">{{ t('common.belowAvg') }}</span>
+        <span class="legend-label">{{ t('common.decrease') }}</span>
         <div class="legend-scale">
           <div class="legend-bar"></div>
         </div>
-        <span class="legend-label">{{ t('common.aboveAvg') }}</span>
+        <span class="legend-label">{{ t('common.increase') }}</span>
       </div>
 
       <Teleport to="body">
@@ -219,12 +205,18 @@ onMounted(async () => {
           :style="{ left: tooltip.x + 'px', top: tooltip.y + 'px' }"
         >
           <div class="tooltip-header">
-            <span class="tooltip-country">{{ tooltip.country }}</span>
-            <span class="tooltip-value" :class="{ 'above-avg': tooltip.value > 1, 'below-avg': tooltip.value < 1 }">
-              {{ tooltip.value !== null ? tooltip.value.toFixed(2) + 'x' : '—' }}
+            <span class="tooltip-year">{{ tooltip.year }}</span>
+            <span
+              class="tooltip-value"
+              :class="{ increase: tooltip.ratio > 1, decrease: tooltip.ratio < 1 }"
+            >
+              {{ tooltip.ratio !== null ? formatRatio(tooltip.ratio) : '—' }}
             </span>
           </div>
           <div class="tooltip-crime">{{ tooltip.crime }}</div>
+          <div v-if="tooltip.prevValue !== null" class="tooltip-details">
+            {{ tooltip.prevValue?.toFixed(1) }} → {{ tooltip.currValue?.toFixed(1) }} per 100k
+          </div>
         </div>
       </Teleport>
     </div>
@@ -237,7 +229,7 @@ onMounted(async () => {
 }
 
 .heatmap-loading {
-  height: 400px;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,7 +241,7 @@ onMounted(async () => {
 }
 
 .heatmap-scroll {
-  overflow: visible;
+  overflow-x: auto;
 }
 
 .heatmap-table {
@@ -261,48 +253,48 @@ onMounted(async () => {
 .crime-header {
   background: #1a1a2e;
   color: white;
-  padding: 0.25rem 0.4rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  width: 160px;
+  width: 220px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
-.country-header {
+.year-header {
   background: #1a1a2e;
   color: white;
-  padding: 0.15rem;
+  padding: 0.5rem 0.25rem;
   text-align: center;
   font-weight: 500;
-  font-size: 0.55rem;
-  writing-mode: vertical-lr;
-  transform: rotate(180deg);
-  height: 90px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 0.7rem;
+  min-width: 50px;
 }
 
 .crime-label {
   background: #f8fafc;
-  padding: 0.25rem 0.4rem;
+  padding: 0.5rem 0.75rem;
   font-weight: 500;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   border-bottom: 1px solid #e2e8f0;
-  width: 160px;
+  width: 220px;
+  position: sticky;
+  left: 0;
 }
 
 .heatmap-cell {
-  padding: 0.15rem;
+  padding: 0.4rem 0.25rem;
   text-align: center;
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   cursor: default;
-  height: 18px;
+  min-width: 50px;
 }
 
 .heatmap-legend {
@@ -328,7 +320,7 @@ onMounted(async () => {
 .legend-bar {
   height: 12px;
   border-radius: 2px;
-  background: linear-gradient(to right, #1a9850, #91cf60, #d9ef8b, #fee08b, #fc8d59, #d73027, #a50026);
+  background: linear-gradient(to right, #1a9850, #91cf60, #d9ef8b, #ffffbf, #fee08b, #fc8d59, #d73027);
 }
 
 .heatmap-tooltip {
@@ -336,12 +328,12 @@ onMounted(async () => {
   transform: translate(-50%, -100%);
   background: #1a1a2e;
   color: white;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   pointer-events: none;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   white-space: nowrap;
 }
 
@@ -358,33 +350,34 @@ onMounted(async () => {
 .tooltip-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.2rem;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
 }
 
-.tooltip-country {
+.tooltip-year {
   font-weight: 600;
-  color: #fff;
 }
 
 .tooltip-value {
   font-weight: 700;
-  color: #fee08b;
 }
 
-.tooltip-value.above-avg {
+.tooltip-value.increase {
   color: #fc8d59;
 }
 
-.tooltip-value.below-avg {
+.tooltip-value.decrease {
   color: #91cf60;
 }
 
 .tooltip-crime {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: #a0aec0;
-  max-width: 200px;
-  white-space: normal;
-  line-height: 1.2;
+}
+
+.tooltip-details {
+  font-size: 0.65rem;
+  color: #718096;
+  margin-top: 0.25rem;
 }
 </style>

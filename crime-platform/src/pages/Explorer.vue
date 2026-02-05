@@ -2,12 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
+import { useTranslations } from '@/composables/useTranslations'
 import CrimeFilters from '@/components/filters/CrimeFilters.vue'
 import CrimeTrendChart from '@/components/charts/CrimeTrendChart.vue'
 import CriminalFingerprintHeatmap from '@/components/charts/CriminalFingerprintHeatmap.vue'
+import YearToYearChangeHeatmap from '@/components/charts/YearToYearChangeHeatmap.vue'
 
 const { t } = useI18n()
 const filtersStore = useFiltersStore()
+const { getCrimeNameByCode } = useTranslations()
 
 const gifMapping = {
   'ICCS0101': 'Intentional homicide.gif',
@@ -47,8 +50,7 @@ const currentGifUrl = () => {
 }
 
 const currentCrimeName = () => {
-  const crime = crimesMetadata.value.find(c => c.code === filtersStore.selectedCrimeType)
-  return crime ? crime.name : ''
+  return getCrimeNameByCode(filtersStore.selectedCrimeType, crimesMetadata.value)
 }
 
 const hasGif = () => gifMapping[filtersStore.selectedCrimeType] !== undefined
@@ -66,39 +68,29 @@ onMounted(async () => {
 
 <template>
   <div class="explorer">
-    <header class="page-header">
-      <h1>European Crime Data Explorer</h1>
-      <p>Analyze crime patterns and trends across all European countries. Use the filters to explore different crime types, years, and metrics.</p>
-    </header>
+    <div class="content-wrapper">
+      <header class="page-header">
+        <h1>{{ t('explorer.title') }}</h1>
+        <p>{{ t('explorer.subtitle') }}</p>
+      </header>
+      <section class="filters-section">
+        <CrimeFilters :hideYear="true" />
+      </section>
 
-    <section class="filters-section">
-      <CrimeFilters :hideYear="true" />
-    </section>
-
-    <div class="content">
-
-      <section class="section">
-        <div class="section-header">
-          <h2>Crime Trends Over Time (2008-2023)</h2>
-          <p class="section-description">
-            This chart shows how the selected crime type has changed over 16 years across the <strong>top 5 countries</strong>
-            with the highest average rates. The lines help identify long-term trends — whether crime is increasing,
-            decreasing, or remaining stable in different regions.
-          </p>
+      <section class="card">
+        <div class="card-header">
+          <h2>{{ t('explorer.trends') }} (2008-2023)</h2>
+          <p>{{ t('explorer.trendsDesc') }}</p>
         </div>
-        <div class="section-content">
+        <div class="card-content">
           <CrimeTrendChart :key="filtersStore.selectedCrimeType + filtersStore.metric" />
         </div>
       </section>
 
-      <section v-if="hasGif()" class="section section-gif">
-        <div class="section-header">
-          <h2>Animated Timeline: {{ currentCrimeName() }}</h2>
-          <p class="section-description">
-            Watch how {{ currentCrimeName().toLowerCase() }} rates have evolved across Europe from 2008 to 2023.
-            Darker colors indicate higher crime rates per 100,000 inhabitants.
-            This animation helps visualize geographical patterns and how they shift over time.
-          </p>
+      <section v-if="hasGif()" class="card">
+        <div class="card-header">
+          <h2>{{ t('explorer.animatedMaps') }}: {{ currentCrimeName() }}</h2>
+          <p>{{ t('explorer.animatedDesc', { crime: currentCrimeName().toLowerCase() }) }}</p>
         </div>
         <div class="gif-container">
           <img
@@ -109,125 +101,102 @@ onMounted(async () => {
         </div>
       </section>
 
-    </div>
+      <section class="card">
+        <div class="card-header">
+          <h2>{{ t('explorer.yearToYear') }}</h2>
+          <p>{{ t('explorer.yearToYearDesc') }}</p>
+        </div>
+        <div class="card-content heatmap-content">
+          <YearToYearChangeHeatmap />
+        </div>
+      </section>
 
-    <section class="section section-wide heatmap-section">
-      <div class="section-header">
-        <h2>Criminal Fingerprints: Country vs European Average</h2>
-        <p class="section-description">
-          This heatmap compares each country's crime rates to the European average (2019-2023 data).
-          <strong>Green</strong> means below average, <strong>red</strong> means above average.
-          Values show how many times higher or lower than the EU average (1.0 = exactly average).
-          This visualization reveals each country's unique "criminal fingerprint" — their distinctive pattern of crime types.
-        </p>
-      </div>
-      <div class="section-content heatmap-content">
-        <CriminalFingerprintHeatmap />
-      </div>
-    </section>
+      <section class="card">
+        <div class="card-header">
+          <h2>{{ t('explorer.fingerprints') }}</h2>
+          <p>{{ t('explorer.fingerprintsDesc') }}</p>
+        </div>
+        <div class="card-content heatmap-content">
+          <CriminalFingerprintHeatmap />
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .explorer {
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   background: #f7fafc;
 }
 
 .page-header {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 2rem 1rem;
+  margin-bottom: -10px;
 }
 
 .page-header h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 600;
   color: #1a1a2e;
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.25rem;
 }
 
 .page-header p {
   color: #718096;
-  font-size: 0.95rem;
   margin: 0;
-  line-height: 1.5;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .filters-section {
-  max-width: 1200px;
-  margin: 0 auto 1.5rem;
-  padding: 0 2rem;
-}
-
-.filters-section > :deep(*) {
   background: white;
   padding: 1.25rem;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-.section {
+.card {
   background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-.section-header {
+.card-header {
   padding: 1.5rem 1.5rem 0;
 }
 
-.section-header h2 {
-  font-size: 1.35rem;
+.card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #1a1a2e;
   margin: 0 0 0.75rem;
 }
 
-.section-description {
+.card-header p {
   color: #4a5568;
   font-size: 0.9rem;
   line-height: 1.6;
   margin: 0;
 }
 
-.section-description strong {
+.card-header p strong {
   color: #1a1a2e;
 }
 
-.section-content {
+.card-content {
   padding: 1.5rem;
 }
 
-.heatmap-section {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 2rem;
-  box-sizing: content-box;
-}
-
-.heatmap-section .section-header {
-  max-width: none;
-}
-
-.section-wide .heatmap-content {
-  padding: 1rem;
+.heatmap-content {
   overflow-x: auto;
-}
-
-.section-gif {
-  background: white;
 }
 
 .gif-container {
@@ -247,28 +216,17 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .page-header {
-    padding: 1.5rem 1rem 1rem;
+  .content-wrapper {
+    padding: 1.5rem;
+    gap: 1.5rem;
   }
 
-  .filters-section {
-    padding: 0 1rem;
+  .card-header {
+    padding: 1.25rem 1.25rem 0;
   }
 
-  .content {
-    padding: 1rem;
-  }
-
-  .heatmap-section {
-    margin: 0 1rem 1rem;
-  }
-
-  .section-header {
-    padding: 1rem 1rem 0;
-  }
-
-  .section-content {
-    padding: 1rem;
+  .card-content {
+    padding: 1.25rem;
   }
 }
 </style>

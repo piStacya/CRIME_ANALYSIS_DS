@@ -1,8 +1,34 @@
 {
+  "landing": {
+    "title": "Euroopa Kuritegevuse Analüüs",
+    "subtitle": "Uuri kuritegevuse mustreid 39 Euroopa riigis interaktiivsete visualiseeringute abil. Avasta trende, võrdle piirkondi ja mõista, kuidas kuritegevus on arenenud aastatel 2008–2023.",
+    "cta": "Alusta uurimist",
+    "stats": {
+      "countries": "Riiki",
+      "crimeTypes": "Kuriteo liiki",
+      "years": "Aastat andmeid"
+    },
+    "features": {
+      "maps": {
+        "title": "Interaktiivsed kaardid",
+        "desc": "Visualiseeri kuritegevuse määrasid üle Euroopa värvikoodidega kaartide ja animatsioonidega."
+      },
+      "trends": {
+        "title": "Trendianalüüs",
+        "desc": "Jälgi, kuidas kuritegevuse mustrid on muutunud 16 aasta jooksul."
+      },
+      "compare": {
+        "title": "Riikide profiilid",
+        "desc": "Võrdle riike ja avasta unikaalseid kriminaalseid sõrmejälgi."
+      }
+    },
+    "dataSource": "Andmed pärinevad Eurostatist · Tartu Ülikooli andmeteaduse projekt"
+  },
   "nav": {
     "home": "Avaleht",
     "explorer": "Uurija",
-    "about": "Meist"
+    "compare": "Võrdle",
+    "about": "Projektist"
   },
   "home": {
     "title": "Euroopa Kuritegevuse Analüüs",
@@ -19,38 +45,59 @@
     "absolute": "Absoluutarvud"
   },
   "explorer": {
+    "title": "Euroopa kuritegevuse andmete uurija",
+    "subtitle": "Analüüsi kuritegevuse mustreid ja trende kõigis Euroopa riikides. Kasuta filtreid erinevate kuriteoliikide, aastate ja mõõdikute uurimiseks.",
     "map": "Interaktiivne kaart",
     "animatedMaps": "Animeeritud kaardid",
-    "trends": "Kuritegevuse trendid",
-    "fingerprints": "Kriminaalsed sõrmejäljed",
+    "trends": "Kuritegevuse trendid ajas",
+    "trendsDesc": "See graafik näitab, kuidas valitud kuriteoliik on muutunud 16 aasta jooksul 5 kõrgeima keskmise määraga riigis. Jooned aitavad tuvastada pikaajalisi trende — kas kuritegevus suureneb, väheneb või püsib stabiilsena erinevates piirkondades.",
+    "animatedDesc": "Vaata, kuidas {crime} määrad on arenenud üle Euroopa aastatel 2008-2023. Tumedamad värvid näitavad kõrgemat kuritegevuse määra 100 000 elaniku kohta. See animatsioon aitab visualiseerida geograafilisi mustreid ja nende muutumist ajas.",
+    "yearToYear": "Aastane muutus: kuritegevuse trendid",
+    "yearToYearDesc": "See soojuskaart näitab, kuidas kuritegevuse määrad muutusid aastast aastasse üle Euroopa. Roheline tähendab kuritegevuse vähenemist, punane suurenemist. Väärtused näitavad protsentuaalset muutust võrreldes eelmise aastaga.",
+    "fingerprints": "Kriminaalsed sõrmejäljed: riik vs Euroopa keskmine",
+    "fingerprintsDesc": "See soojuskaart võrdleb iga riigi kuritegevuse määrasid Euroopa keskmisega (2019-2023 andmed). Roheline tähendab alla keskmise, punane üle keskmise. Väärtused näitavad, mitu korda kõrgem või madalam on EL-i keskmisest (1.0 = täpselt keskmine). See visualiseerimine paljastab iga riigi ainulaadse \"kriminaalse sõrmejälje\".",
     "profiles": "Riikide profiilid",
     "data": "Andmetabel"
   },
   "about": {
     "title": "Projektist",
+    "overview": {
+      "title": "Ülevaade",
+      "content": "See projekt uurib kuritegevuse trende Euroopa riikides, kasutades Eurostati avalikult kättesaadavaid andmeid, ning pakub reprodutseeritavat uurimuslikku analüüsi kuritegevuse mustrite kohta Euroopas. Eesmärk oli rakendada andmeteaduse põhioskusi — andmete puhastamine, eeltöötlus, uurimuslik analüüs, visualiseerimine ja tõlgendamine — et luua sisukaid teadmisi kuritegevuse mustrite kohta."
+    },
     "methodology": {
       "title": "Metoodika",
-      "content": "See analüüs kasutab Eurostati ametlikku kuritegevuse statistikat, mis on normaliseeritud 100 000 elaniku kohta, et võimaldada ausat võrdlust erineva rahvastiku suurusega riikide vahel. Andmed on puhastatud ja töödeldud, et käsitleda puuduvaid väärtusi ning tagada järjepidevus aastate ja piirkondade lõikes."
-    },
-    "dataSources": {
-      "title": "Andmeallikad",
-      "content": "Kõik kuritegevuse andmed pärinevad Eurostati andmebaasist, mis on Euroopa Liidu statistikaamet."
+      "content": "Projekt kasutab ICCS (International Classification of Crime Statistics) raamistiku alusel määratletud kuriteo kategooriaid, mis võimaldab järjepidevat võrdlust riikide ja aastate lõikes. Kuritegevuse määrad on normaliseeritud 100 000 elaniku kohta, et võimaldada õiglast võrdlust erineva rahvaarvuga riikide vahel. See projekt on puhtalt kirjeldav ega esita põhjuslikke väiteid."
     },
     "scope": {
       "title": "Ulatus ja piirangud",
-      "content": "See projekt hõlmab 25 kuriteo kategooriat 39 Euroopa riigis aastatel 2008-2023. Pange tähele, et aruandlustavad erinevad riigiti ning mõned andmepunktid võivad puududa või ei pruugi olla otseselt võrreldavad."
+      "content": "See projekt hõlmab 25 kuriteo kategooriat 39 Euroopa riigis, peamiselt aastatel 2008-2023, kuid kasutab ka ajaloolisi andmeid aastatest 1993-2007. Pange tähele, et aruandlustavad ja õiguslikud definitsioonid erinevad riigiti, mis võib mõjutada võrreldavust. Mõned andmepunktid võivad puududa või näidata anomaaliaid riiklike aruandlussüsteemide erinevuste tõttu."
     },
-    "team": {
-      "title": "Projektimeeskond",
-      "content": "See projekt töötati välja andmeteaduse portfoolio osana, näidates oskusi andmete töötlemisel, visualiseerimisel ja veebiarenduses."
+    "credits": {
+      "title": "Tänuavaldused",
+      "content": "See projekt töötati välja Tartu Ülikooli andmeteaduse kursuse raames. Kuritegevuse andmed pärinevad Eurostati kuritegevuse ja kriminaalõiguse andmebaasidest. Geograafilised piirid on pärit EuroGeographicsilt."
     }
   },
   "common": {
     "loading": "Laadimine...",
     "noData": "Andmed puuduvad",
     "error": "Tekkis viga",
-    "compare": "Võrdle...",
-    "viewDetails": "Vaata üksikasju"
+    "compare": "Võrdle",
+    "viewDetails": "Vaata üksikasju",
+    "backToMap": "Tagasi kaardile",
+    "crimeRate": "Kuritegevuse määr",
+    "per100k": "100k kohta",
+    "low": "Madal",
+    "high": "Kõrge",
+    "clickToExplore": "Kliki uurimiseks",
+    "europeanAverage": "Euroopa keskmine",
+    "year": "Aasta",
+    "vsAvg": "vs keskm",
+    "crimeTypeHeader": "Kuriteo liik",
+    "belowAvg": "Alla keskmise",
+    "aboveAvg": "Üle keskmise",
+    "decrease": "Vähenemine",
+    "increase": "Suurenemine"
   },
   "crimeCategories": {
     "violence": "Vägivald",
@@ -60,5 +107,45 @@
     "financial": "Finantskuriteod",
     "cyber": "Küberkuriteod",
     "environmental": "Keskkonnakuriteod"
+  },
+  "country": {
+    "subtitle": "Detailne kuritegevuse statistika ja analüüs",
+    "topCrimes": "Top 5 levinumat kuritegu",
+    "topCrimesDesc": "Kõige sagedamini registreeritud kuriteotüübid riigis {country} aastal {year}, mõõdetuna 100 000 elaniku kohta.",
+    "fingerprint": "Kriminaalne sõrmejälg",
+    "fingerprintDesc": "{country} top 15 kuriteotüüpi võrreldes Euroopa keskmisega. Väärtused üle 1.0 tähendavad keskmisest kõrgemat, alla 1.0 madalamat.",
+    "allCrimes": "Kõik kuriteotüübid",
+    "allCrimesDesc": "Kõigi registreeritud kuriteotüüpide täielik nimekiri riigis {country}, näidates määra 100 000 elaniku kohta ja võrdlust Euroopa keskmisega.",
+    "crimeOfYear": "Aasta kuritegu (2008-2023)",
+    "crimeOfYearDesc": "Kõige levinum kuriteotüüp riigis {country} igal aastal. Erinevad värvid tähistavad erinevaid kuriteotüüpe. Detailide nägemiseks vii hiir tulpade kohale.",
+    "trendTitle": "Kuritegevuse trend ajas",
+    "trendDesc": "Kuidas valitud kuriteotüüp on muutunud riigis {country} aastatel 2008-2023, võrreldes Euroopa keskmisega.",
+    "selectCrime": "Vali kuriteotüüp:",
+    "rateHeader": "Määr (100k kohta)",
+    "vsEU": "vs EL"
+  },
+  "compare": {
+    "title": "Võrdle riike",
+    "subtitle": "Vali 2-5 riiki, et võrrelda nende kuritegevuse statistikat kõrvuti",
+    "selectCountries": "Vali riigid",
+    "addCountry": "Lisa",
+    "searchPlaceholder": "Otsi riike...",
+    "selectedCount": "{count} riiki valitud",
+    "minCountries": "Vali vähemalt 2 riiki võrdlemiseks",
+    "maxCountries": "Maksimaalselt 5 riiki lubatud",
+    "clearAll": "Tühjenda kõik",
+    "topCrimes": "Peamiste kuritegude võrdlus",
+    "topCrimesDesc": "Top 5 kuriteotüüpi keskmise määra järgi valitud riikides aastal {year}, mõõdetuna 100 000 elaniku kohta.",
+    "fingerprints": "Kriminaalsed sõrmejäljed",
+    "fingerprintsDesc": "Kuritegevuse profiilid võrreldes Euroopa keskmisega. Väärtused üle 1.0 näitavad EL-i keskmisest kõrgemat.",
+    "trends": "Kuritegevuse trendid ajas",
+    "trendsDesc": "Kuidas valitud kuriteotüüp on muutunud aastatel 2008-2023 valitud riikides.",
+    "dataTable": "Detailne võrdlus",
+    "dataTableDesc": "Kõigi kuriteotüüpide täielik võrdlus. Sortimiseks klõpsa veeru päistel.",
+    "crimeType": "Kuriteo liik",
+    "euAverage": "EL keskmine",
+    "noData": "Andmed puuduvad",
+    "aboveAvg": "üle EL keskmise",
+    "belowAvg": "alla EL keskmise"
   }
 }

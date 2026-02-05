@@ -13,6 +13,7 @@ import {
 } from 'chart.js'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
+import { useTranslations } from '@/composables/useTranslations'
 
 ChartJS.register(
   CategoryScale,
@@ -33,6 +34,7 @@ const props = defineProps({
 
 const { t } = useI18n()
 const filtersStore = useFiltersStore()
+const { getCountryNameByCode } = useTranslations()
 
 const loading = ref(true)
 const crimeData = ref(null)
@@ -44,9 +46,7 @@ const colors = [
 ]
 
 const getCountryName = (code) => {
-  if (!countriesMetadata.value) return code
-  const country = countriesMetadata.value.find(c => c.code === code)
-  return country ? country.name : code
+  return getCountryNameByCode(code, countriesMetadata.value)
 }
 
 const getTopCountries = () => {
