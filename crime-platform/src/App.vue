@@ -7,7 +7,11 @@ import AppFooter from './components/layout/AppFooter.vue'
   <div class="app">
     <AppHeader />
     <main class="main-content">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="page-fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
     <AppFooter />
   </div>
@@ -23,5 +27,22 @@ import AppFooter from './components/layout/AppFooter.vue'
 .main-content {
   flex: 1;
   background: #f7fafc;
+}
+
+.page-fade-enter-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.page-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.page-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-fade-leave-to {
+  opacity: 0;
 }
 </style>

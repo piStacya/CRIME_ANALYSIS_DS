@@ -20,15 +20,25 @@ const tooltip = ref({
   value: null
 })
 
+const getZoom = () => parseFloat(getComputedStyle(document.body).zoom) || 1
+
 const showTooltip = (event, crime, country, value) => {
-  const rect = event.target.getBoundingClientRect()
+  const zoom = getZoom()
   tooltip.value = {
     show: true,
-    x: rect.left + rect.width / 2,
-    y: rect.top - 10,
+    x: event.clientX / zoom,
+    y: event.clientY / zoom - 12,
     crime,
     country,
     value
+  }
+}
+
+const moveTooltip = (event) => {
+  if (tooltip.value.show) {
+    const zoom = getZoom()
+    tooltip.value.x = event.clientX / zoom
+    tooltip.value.y = event.clientY / zoom - 12
   }
 }
 
@@ -195,6 +205,7 @@ onMounted(async () => {
                   color: getTextColor(value)
                 }"
                 @mouseenter="showTooltip($event, crime, heatmapData.countries[countryIdx], value)"
+                @mousemove="moveTooltip($event)"
                 @mouseleave="hideTooltip"
               >
                 {{ value !== null ? value.toFixed(1) : '-' }}

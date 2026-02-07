@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
@@ -18,6 +18,7 @@ import {
   Legend,
   Filler
 } from 'chart.js'
+import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
 
 ChartJS.register(
   CategoryScale,
@@ -43,6 +44,36 @@ const countryData = ref(null)
 const crimeData = ref(null)
 const crimesMetadata = ref(null)
 const countriesMetadata = ref(null)
+
+const showCrimeDropdown = ref(false)
+const crimeSearch = ref('')
+
+const filteredCrimes = computed(() => {
+  if (!crimesMetadata.value) return []
+  if (!crimeSearch.value) return crimesMetadata.value
+  const search = crimeSearch.value.toLowerCase()
+  return crimesMetadata.value.filter(crime =>
+    getCrimeName(crime).toLowerCase().includes(search)
+  )
+})
+
+const selectedCrimeName = computed(() => {
+  if (!crimesMetadata.value) return ''
+  const crime = crimesMetadata.value.find(c => c.code === filtersStore.selectedCrimeType)
+  return crime ? getCrimeName(crime) : ''
+})
+
+const selectCrime = (code) => {
+  filtersStore.setCrimeType(code)
+  showCrimeDropdown.value = false
+  crimeSearch.value = ''
+}
+
+const handleClickOutside = (e) => {
+  if (!e.target.closest('.crime-dropdown-wrapper')) {
+    showCrimeDropdown.value = false
+  }
+}
 
 const countryName = computed(() => {
   if (!countriesMetadata.value) return countryCode.value
@@ -142,9 +173,13 @@ const barChartOptions = computed(() => ({
   indexAxis: 'y',
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: { display: false },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         title: (ctx) => getCrimeName(topCrimes.value[ctx[0].dataIndex]) || '',
         label: (ctx) => `${ctx.parsed.x.toFixed(2)} ${t('common.per100k')}`
@@ -160,7 +195,9 @@ const barChartOptions = computed(() => ({
         autoSkip: false
       }
     }
-  }
+  },
+  interaction: { mode: 'index', axis: 'y', intersect: false },
+  hover: { animationDuration: 0 }
 }))
 
 const trendChartData = computed(() => {
@@ -170,7 +207,7 @@ const trendChartData = computed(() => {
   const europeValues = filtersStore.years.map(year => calculateEuropeAverage(filtersStore.selectedCrimeType, year))
 
   return {
-    labels: filtersStore.years,
+    labels: filtersStore.years.map(String),
     datasets: [
       {
         label: countryName.value,
@@ -196,18 +233,24 @@ const trendChartData = computed(() => {
 const trendChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: { position: 'top' },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(2) ?? 'No data'} per 100k`
       }
     }
   },
   scales: {
-    x: { grid: { display: false } },
+    x: { type: 'category', grid: { display: false } },
     y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
-  }
+  },
+  interaction: { mode: 'index', axis: 'x', intersect: false },
+  hover: { animationDuration: 0 }
 }
 
 const radarChartData = computed(() => {
@@ -228,7 +271,9 @@ const radarChartData = computed(() => {
         backgroundColor: 'rgba(215, 48, 39, 0.2)',
         borderColor: '#d73027',
         borderWidth: 2,
-        pointBackgroundColor: '#d73027'
+        pointBackgroundColor: '#d73027',
+        pointRadius: 4,
+        pointHitRadius: 20
       },
       {
         label: t('common.europeanAverage'),
@@ -236,7 +281,8 @@ const radarChartData = computed(() => {
         backgroundColor: 'rgba(69, 117, 180, 0.1)',
         borderColor: '#4575b4',
         borderDash: [5, 5],
-        pointRadius: 0
+        pointRadius: 0,
+        pointHitRadius: 0
       }
     ]
   }
@@ -245,12 +291,16 @@ const radarChartData = computed(() => {
 const radarChartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: { position: 'top' },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         title: (ctx) => getCrimeName(topCrimesForRadar.value[ctx[0].dataIndex]) || '',
-        label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.r.toFixed(2)}x`
+        label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.r?.toFixed(2) ?? '—'}x`
       }
     }
   },
@@ -263,7 +313,9 @@ const radarChartOptions = computed(() => ({
         font: { size: 9 }
       }
     }
-  }
+  },
+  interaction: { mode: 'nearestByAngle', intersect: false },
+  hover: { animationDuration: 0 }
 }))
 
 const crimeColorsByCode = {
@@ -287,7 +339,7 @@ const crimeOfYearChartData = computed(() => {
   if (!crimeOfTheYear.value.length) return { labels: [], datasets: [] }
 
   return {
-    labels: crimeOfTheYear.value.map(c => c.year),
+    labels: crimeOfTheYear.value.map(c => String(c.year)),
     datasets: [{
       label: t('country.crimeOfYear'),
       data: crimeOfTheYear.value.map(c => c.value),
@@ -300,24 +352,30 @@ const crimeOfYearChartData = computed(() => {
 const crimeOfYearChartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: { display: false },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         title: (ctx) => `${t('common.year')} ${crimeOfTheYear.value[ctx[0].dataIndex]?.year}`,
         label: (ctx) => {
-          const crimeData = crimeOfTheYear.value[ctx.dataIndex]
-          const crime = crimesMetadata.value?.find(c => c.code === crimeData?.code)
-          const crimeName = crime ? getCrimeName(crime) : crimeData?.crime
-          return [`${t('filters.crimeType')}: ${crimeName}`, `${t('country.rateHeader')}: ${crimeData?.value?.toFixed(2)}`]
+          const entry = crimeOfTheYear.value[ctx.dataIndex]
+          const crime = crimesMetadata.value?.find(c => c.code === entry?.code)
+          const crimeName = crime ? getCrimeName(crime) : entry?.crime
+          return [`${t('filters.crimeType')}: ${crimeName}`, `${t('country.rateHeader')}: ${entry?.value?.toFixed(2)}`]
         }
       }
     }
   },
   scales: {
-    x: { grid: { display: false } },
+    x: { type: 'category', grid: { display: false } },
     y: { beginAtZero: true, grid: { color: '#e2e8f0' } }
-  }
+  },
+  interaction: { mode: 'index', axis: 'x', intersect: false },
+  hover: { animationDuration: 0 }
 }))
 
 const allCrimesTable = computed(() => {
@@ -335,6 +393,7 @@ const allCrimesTable = computed(() => {
 })
 
 onMounted(async () => {
+  document.addEventListener('click', handleClickOutside)
   try {
     const base = import.meta.env.BASE_URL
     const [crimeRes, crimesRes, countriesRes] = await Promise.all([
@@ -350,6 +409,10 @@ onMounted(async () => {
     console.error('Error loading data:', err)
     loading.value = false
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -445,11 +508,35 @@ onMounted(async () => {
           </p>
           <div class="crime-selector">
             <label>{{ t('country.selectCrime') }}</label>
-            <select :value="filtersStore.selectedCrimeType" @change="filtersStore.setCrimeType($event.target.value)">
-              <option v-for="crime in crimesMetadata" :key="crime.code" :value="crime.code">
-                {{ getCrimeName(crime) }}
-              </option>
-            </select>
+            <div class="crime-dropdown-wrapper">
+              <button
+                class="crime-dropdown-trigger"
+                @click.stop="showCrimeDropdown = !showCrimeDropdown"
+              >
+                <span class="selected-crime">{{ selectedCrimeName }}</span>
+                <span class="dropdown-arrow">▼</span>
+              </button>
+              <div v-if="showCrimeDropdown" class="crime-dropdown">
+                <input
+                  v-model="crimeSearch"
+                  type="text"
+                  :placeholder="t('compare.searchPlaceholder')"
+                  class="crime-search"
+                  @click.stop
+                />
+                <div class="crime-list">
+                  <button
+                    v-for="crime in filteredCrimes"
+                    :key="crime.code"
+                    class="crime-option"
+                    :class="{ active: crime.code === filtersStore.selectedCrimeType }"
+                    @click="selectCrime(crime.code)"
+                  >
+                    {{ getCrimeName(crime) }}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="chart-container trend-chart">
             <Line :data="trendChartData" :options="trendChartOptions" />
@@ -614,11 +701,95 @@ onMounted(async () => {
   color: #4a5568;
 }
 
-.crime-selector select {
+.crime-dropdown-wrapper {
+  position: relative;
+}
+
+.crime-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.5rem 1rem;
+  min-width: 300px;
+  max-width: 400px;
+  background: white;
   border: 1px solid #e2e8f0;
   border-radius: 0.375rem;
-  min-width: 250px;
+  font-size: 0.875rem;
+  color: #1a1a2e;
+  cursor: pointer;
+  text-align: left;
+}
+
+.crime-dropdown-trigger:hover {
+  border-color: #4575b4;
+}
+
+.selected-crime {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-arrow {
+  font-size: 0.625rem;
+  color: #718096;
+}
+
+.crime-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  min-width: 300px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.crime-search {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.crime-search:focus {
+  background: #f8fafc;
+}
+
+.crime-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.crime-option {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+  color: #334155;
+}
+
+.crime-option:hover {
+  background: #f1f5f9;
+}
+
+.crime-option.active {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 500;
 }
 
 .table-container {

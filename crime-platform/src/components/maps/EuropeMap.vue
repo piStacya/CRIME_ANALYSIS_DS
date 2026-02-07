@@ -15,7 +15,6 @@ const props = defineProps({
 
 const emit = defineEmits(['countryClick', 'countryHover'])
 
-// Expose map methods for parent component
 const zoomToCountry = (countryCode) => {
   if (!geoJsonLayer.value || !map.value) return
 

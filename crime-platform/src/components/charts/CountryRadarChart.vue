@@ -12,6 +12,7 @@ import {
 } from 'chart.js'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
+import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
 
 ChartJS.register(
   RadialLinearScale,
@@ -140,7 +141,8 @@ const chartData = computed(() => {
         borderColor: '#d73027',
         borderWidth: 2,
         pointBackgroundColor: '#d73027',
-        pointRadius: 4
+        pointRadius: 4,
+        pointHitRadius: 20
       },
       {
         label: 'European Average',
@@ -149,7 +151,8 @@ const chartData = computed(() => {
         borderColor: '#4575b4',
         borderWidth: 2,
         borderDash: [5, 5],
-        pointRadius: 0
+        pointRadius: 0,
+        pointHitRadius: 0
       }
     ]
   }
@@ -167,15 +170,19 @@ const chartOptions = {
       }
     },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         label: (context) => {
           if (context.datasetIndex === 1) return 'European Average: 1.0x'
           const value = context.parsed.r
-          return `${context.dataset.label}: ${value.toFixed(2)}x average`
+          return `${context.dataset.label}: ${value?.toFixed(2) ?? '—'}x average`
         }
       }
     }
   },
+  interaction: { mode: 'nearestByAngle', intersect: false },
   scales: {
     r: {
       beginAtZero: true,

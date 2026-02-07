@@ -19,6 +19,7 @@ import {
   Filler
 } from 'chart.js'
 import CrimeTrendChart from '@/components/charts/CrimeTrendChart.vue'
+import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
 
 ChartJS.register(
   CategoryScale,
@@ -43,7 +44,7 @@ const crimeData = ref(null)
 const crimesMetadata = ref(null)
 const countriesMetadata = ref(null)
 
-// Initialize from URL query or default to EE, FI
+
 const getInitialCountries = () => {
   const queryCountries = route.query.countries
   if (queryCountries) {
@@ -55,6 +56,8 @@ const getInitialCountries = () => {
 const selectedCountries = ref(getInitialCountries())
 const showCountryPicker = ref(false)
 const countrySearch = ref('')
+const showCrimeDropdown = ref(false)
+const crimeSearch = ref('')
 
 const addCountry = (code) => {
   if (selectedCountries.value.length < 5 && !selectedCountries.value.includes(code)) {
@@ -64,10 +67,33 @@ const addCountry = (code) => {
   countrySearch.value = ''
 }
 
-// Close picker when clicking outside
+const filteredCrimes = computed(() => {
+  if (!crimesMetadata.value) return []
+  if (!crimeSearch.value) return crimesMetadata.value
+  const search = crimeSearch.value.toLowerCase()
+  return crimesMetadata.value.filter(crime =>
+    getCrimeName(crime).toLowerCase().includes(search)
+  )
+})
+
+const selectedCrimeName = computed(() => {
+  if (!crimesMetadata.value) return ''
+  const crime = crimesMetadata.value.find(c => c.code === filtersStore.selectedCrimeType)
+  return crime ? getCrimeName(crime) : ''
+})
+
+const selectCrime = (code) => {
+  filtersStore.setCrimeType(code)
+  showCrimeDropdown.value = false
+  crimeSearch.value = ''
+}
+
 const handleClickOutside = (e) => {
   if (!e.target.closest('.add-country-wrapper')) {
     showCountryPicker.value = false
+  }
+  if (!e.target.closest('.crime-dropdown-wrapper')) {
+    showCrimeDropdown.value = false
   }
 }
 
@@ -99,11 +125,10 @@ const getCountryValue = (countryCode, crimeCode, year) => {
   return crimeTypeData.per100k?.[countryCode] ?? null
 }
 
-// Top crimes across all selected countries
+
 const topCrimesComparison = computed(() => {
   if (!crimesMetadata.value || !crimeData.value || selectedCountries.value.length < 2) return []
 
-  // Get average value across selected countries for each crime
   const crimesWithAvg = crimesMetadata.value.map(crime => {
     const values = selectedCountries.value.map(code =>
       getCountryValue(code, crime.code, filtersStore.selectedYear)
@@ -119,7 +144,7 @@ const topCrimesComparison = computed(() => {
     .slice(0, 5)
 })
 
-// Bar chart for top crimes comparison
+
 const barChartData = computed(() => {
   if (!topCrimesComparison.value.length) return { labels: [], datasets: [] }
 
@@ -147,12 +172,16 @@ const barChartOptions = computed(() => ({
   indexAxis: 'y',
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: {
       position: 'top',
       labels: { usePointStyle: true, padding: 15 }
     },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         title: (ctx) => getCrimeName(topCrimesComparison.value[ctx[0].dataIndex]) || '',
         label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.x?.toFixed(2) ?? 'N/A'} ${t('common.per100k')}`
@@ -165,17 +194,19 @@ const barChartOptions = computed(() => ({
       grid: { display: false },
       ticks: { font: { size: 11 }, autoSkip: false }
     }
-  }
+  },
+  interaction: { mode: 'index', axis: 'y', intersect: false },
+  hover: { animationDuration: 0 }
 }))
 
-// Radar chart - criminal fingerprints comparison
+
 const topCrimesForRadar = computed(() => {
   if (!crimesMetadata.value || !crimeData.value) return []
 
   const crimesWithIndex = crimesMetadata.value
     .map(crime => {
       const europeAvg = calculateEuropeAverage(crime.code, filtersStore.selectedYear)
-      // Get average index score across selected countries
+
       const indices = selectedCountries.value.map(code => {
         const value = getCountryValue(code, crime.code, filtersStore.selectedYear)
         return europeAvg > 0 && value !== null ? value / europeAvg : 0
@@ -187,8 +218,7 @@ const topCrimesForRadar = computed(() => {
     .sort((a, b) => b.avgIndex - a.avgIndex)
     .slice(0, 12)
 
-  // Reorder for smoother radar chart: arrange so adjacent values are similar
-  // Use a simple approach: sort by value, then interleave high/low to create smooth transitions
+
   if (crimesWithIndex.length < 3) return crimesWithIndex
 
   const sorted = [...crimesWithIndex].sort((a, b) => a.avgIndex - b.avgIndex)
@@ -234,11 +264,12 @@ const radarChartData = computed(() => {
       borderColor: colors[index % colors.length],
       borderWidth: 2,
       pointBackgroundColor: colors[index % colors.length],
-      pointRadius: 3
+      pointRadius: 3,
+      pointHitRadius: 20
     }
   })
 
-  // Add EU average baseline
+
   datasets.push({
     label: t('compare.euAverage'),
     data: topCrimesForRadar.value.map(() => 1),
@@ -246,6 +277,7 @@ const radarChartData = computed(() => {
     borderColor: '#718096',
     borderDash: [5, 5],
     pointRadius: 0,
+    pointHitRadius: 0,
     borderWidth: 1
   })
 
@@ -255,12 +287,16 @@ const radarChartData = computed(() => {
 const radarChartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: {
       position: 'top',
       labels: { usePointStyle: true, padding: 15 }
     },
     tooltip: {
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         title: (ctx) => getCrimeName(topCrimesForRadar.value[ctx[0].dataIndex]) || '',
         label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.r?.toFixed(2) ?? 'N/A'}x ${t('compare.euAverage')}`
@@ -277,10 +313,12 @@ const radarChartOptions = computed(() => ({
       },
       pointLabels: { font: { size: 9 } }
     }
-  }
+  },
+  interaction: { mode: 'nearestByAngle', intersect: false },
+  hover: { animationDuration: 0 }
 }))
 
-// Comparison table data
+
 const comparisonTableData = computed(() => {
   if (!crimesMetadata.value || !crimeData.value) return []
 
@@ -295,13 +333,13 @@ const comparisonTableData = computed(() => {
         countryValues[code] = { value, ratio }
       }
 
-      // Check if at least one country has data
+
       const hasData = Object.values(countryValues).some(v => v.value !== null)
       return { ...crime, europeAvg, countryValues, hasData }
     })
     .filter(c => c.hasData)
     .sort((a, b) => {
-      // Sort by first country's value
+
       const aVal = a.countryValues[selectedCountries.value[0]]?.value ?? 0
       const bVal = b.countryValues[selectedCountries.value[0]]?.value ?? 0
       return bVal - aVal

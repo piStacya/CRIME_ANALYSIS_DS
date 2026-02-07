@@ -21,17 +21,27 @@ const tooltip = ref({
   currValue: null
 })
 
+const getZoom = () => parseFloat(getComputedStyle(document.body).zoom) || 1
+
 const showTooltip = (event, crime, year, ratio, prevValue, currValue) => {
-  const rect = event.target.getBoundingClientRect()
+  const zoom = getZoom()
   tooltip.value = {
     show: true,
-    x: rect.left + rect.width / 2,
-    y: rect.top - 10,
+    x: event.clientX / zoom,
+    y: event.clientY / zoom - 12,
     crime,
     year,
     ratio,
     prevValue,
     currValue
+  }
+}
+
+const moveTooltip = (event) => {
+  if (tooltip.value.show) {
+    const zoom = getZoom()
+    tooltip.value.x = event.clientX / zoom
+    tooltip.value.y = event.clientY / zoom - 12
   }
 }
 
@@ -181,6 +191,7 @@ onMounted(async () => {
                   heatmapData.values[crimeIdx][yearIdx].prev,
                   heatmapData.values[crimeIdx][yearIdx].curr
                 )"
+                @mousemove="moveTooltip($event)"
                 @mouseleave="hideTooltip"
               >
                 {{ formatRatio(value) }}

@@ -14,6 +14,7 @@ import {
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
 import { useTranslations } from '@/composables/useTranslations'
+import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
 
 ChartJS.register(
   CategoryScale,
@@ -116,7 +117,7 @@ const chartData = computed(() => {
   })
 
   return {
-    labels: filtersStore.years,
+    labels: filtersStore.years.map(String),
     datasets
   }
 })
@@ -124,6 +125,7 @@ const chartData = computed(() => {
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 0 },
   plugins: {
     legend: {
       position: 'top',
@@ -133,8 +135,9 @@ const chartOptions = computed(() => ({
       }
     },
     tooltip: {
-      mode: 'index',
-      intersect: false,
+      enabled: true,
+      ...hiddenCanvasTooltip,
+      external: externalTooltipHandler,
       callbacks: {
         label: (context) => {
           const value = context.parsed.y
@@ -148,6 +151,7 @@ const chartOptions = computed(() => ({
   },
   scales: {
     x: {
+      type: 'category',
       grid: {
         display: false
       }
@@ -163,10 +167,11 @@ const chartOptions = computed(() => ({
     }
   },
   interaction: {
-    mode: 'nearest',
+    mode: 'index',
     axis: 'x',
     intersect: false
-  }
+  },
+  hover: { animationDuration: 0 }
 }))
 
 onMounted(async () => {
