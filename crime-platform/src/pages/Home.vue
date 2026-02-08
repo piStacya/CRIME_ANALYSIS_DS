@@ -1,15 +1,70 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useFiltersStore } from '@/stores/filters'
 import EuropeMap from '@/components/maps/EuropeMap.vue'
 import CrimeFilters from '@/components/filters/CrimeFilters.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const router = useRouter()
 const filtersStore = useFiltersStore()
 
 const selectedCountry = ref(null)
 const showModal = ref(false)
+
+const countries = ref([])
+const showCountryDropdown = ref(false)
+const countryQuery = ref('')
+const countryInputRef = ref(null)
+const countryWrapperRef = ref(null)
+
+onMounted(async () => {
+  try {
+    const base = import.meta.env.BASE_URL
+    const res = await fetch(`${base}data/countries.json`)
+    countries.value = await res.json()
+  } catch (e) {}
+  document.addEventListener('click', handleOutsideClick)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick)
+})
+
+const handleOutsideClick = (e) => {
+  if (countryWrapperRef.value && !countryWrapperRef.value.contains(e.target)) {
+    showCountryDropdown.value = false
+  }
+}
+
+const filteredCountries = computed(() => {
+  const sorted = [...countries.value].sort((a, b) => {
+    const nameA = locale.value === 'et' ? (a.nameEt || a.name) : a.name
+    const nameB = locale.value === 'et' ? (b.nameEt || b.name) : b.name
+    return nameA.localeCompare(nameB)
+  })
+  if (!countryQuery.value) return sorted
+  const q = countryQuery.value.toLowerCase()
+  return sorted.filter(c => {
+    const name = locale.value === 'et' ? (c.nameEt || c.name) : c.name
+    return name.toLowerCase().includes(q) || c.code.toLowerCase().includes(q)
+  })
+})
+
+const getCountryName = (c) => {
+  return locale.value === 'et' ? (c.nameEt || c.name) : c.name
+}
+
+const onInputFocus = () => {
+  showCountryDropdown.value = true
+}
+
+const goToCountry = (code) => {
+  showCountryDropdown.value = false
+  countryQuery.value = ''
+  router.push(`/country/${code}`)
+}
 
 const handleCountryClick = (country) => {
   selectedCountry.value = country
@@ -30,7 +85,44 @@ const closeModal = () => {
     </section>
 
     <section class="filters-section">
-      <CrimeFilters />
+      <div class="filters-row">
+        <CrimeFilters />
+        <div class="explore-country-wrapper" ref="countryWrapperRef">
+          <div class="explore-country-input-wrap">
+            <label class="explore-label">{{ t('home.exploreCountry') }}</label>
+            <div class="explore-input-inner">
+              <svg class="explore-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                ref="countryInputRef"
+                v-model="countryQuery"
+                type="text"
+                :placeholder="t('home.exploreCountryPlaceholder')"
+                class="explore-country-input"
+                @focus="onInputFocus"
+                @click.stop
+              />
+            </div>
+          </div>
+          <div v-if="showCountryDropdown" class="explore-country-dropdown">
+            <button
+              v-for="c in filteredCountries"
+              :key="c.code"
+              class="explore-country-item"
+              @click="goToCountry(c.code)"
+            >
+              {{ getCountryName(c) }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+            <div v-if="filteredCountries.length === 0" class="explore-country-empty">
+              {{ t('common.noData') }}
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="map-section">
@@ -40,7 +132,6 @@ const closeModal = () => {
       />
     </section>
 
-    <!-- Modal -->
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
@@ -100,6 +191,123 @@ const closeModal = () => {
   margin-bottom: 1.5rem;
 }
 
+.filters-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.explore-country-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.explore-country-input-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.explore-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4575b4;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.explore-input-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.explore-icon {
+  position: absolute;
+  left: 0.625rem;
+  color: #4575b4;
+  pointer-events: none;
+}
+
+.explore-country-input {
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  border: 2px solid #4575b4;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  width: 200px;
+  outline: none;
+  background: #f0f4ff;
+  color: #1a1a2e;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.explore-country-input::placeholder {
+  color: #4575b4;
+  font-weight: 600;
+}
+
+.explore-country-input:focus {
+  border-color: #2b5a9e;
+  box-shadow: 0 0 0 3px rgba(69, 117, 180, 0.15);
+  background: white;
+}
+
+.explore-country-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 240px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+}
+
+.explore-country-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  font-size: 0.825rem;
+  color: #1a1a2e;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.explore-country-item:hover {
+  background: #f0f4ff;
+}
+
+.explore-country-item svg {
+  color: #a0aec0;
+  flex-shrink: 0;
+}
+
+.explore-country-item:hover svg {
+  color: #4575b4;
+}
+
+.explore-country-empty {
+  padding: 1rem;
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.825rem;
+}
+
+.explore-country-dropdown .explore-country-item + .explore-country-item {
+  border-top: 1px solid #f1f5f9;
+}
+
 .map-section {
   background: white;
   border-radius: 0.5rem;
@@ -107,7 +315,6 @@ const closeModal = () => {
   overflow: hidden;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -225,7 +432,6 @@ const closeModal = () => {
   color: #1a1a2e;
 }
 
-/* Animation */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.25s ease;
@@ -244,5 +450,41 @@ const closeModal = () => {
 .fade-enter-from .modal-box,
 .fade-leave-to .modal-box {
   transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .home {
+    padding: 1rem;
+  }
+
+  .welcome-banner h1 {
+    font-size: 1.5rem;
+  }
+
+  .filters-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .explore-country-wrapper {
+    margin-left: 0;
+  }
+
+  .explore-country-input {
+    width: 100%;
+  }
+
+  .explore-country-dropdown {
+    width: 100%;
+  }
+
+  .modal-box {
+    width: calc(100% - 2rem);
+  }
 }
 </style>

@@ -28,4 +28,14 @@
 .copyright {
   font-size: 0.875rem;
 }
+
+@media (max-width: 768px) {
+  .app-footer {
+    padding: 1rem;
+  }
+
+  .copyright {
+    font-size: 0.75rem;
+  }
+}
 </style>

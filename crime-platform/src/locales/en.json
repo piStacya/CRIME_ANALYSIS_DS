@@ -32,7 +32,9 @@
   },
   "home": {
     "title": "European Crime Analysis",
-    "subtitle": "Interactive visualization of crime data across 39 European countries (2008-2023)"
+    "subtitle": "Interactive visualization of crime data across 39 European countries (2008-2023)",
+    "exploreCountry": "Explore a Country",
+    "exploreCountryPlaceholder": "Type country name..."
   },
   "filters": {
     "crimeType": "Crime Type",
@@ -57,7 +59,9 @@
     "fingerprints": "Criminal Fingerprints: Country vs European Average",
     "fingerprintsDesc": "This heatmap compares each country's crime rates to the European average (2019-2023 data). Green means below average, red means above average. Values show how many times higher or lower than the EU average (1.0 = exactly average). This visualization reveals each country's unique \"criminal fingerprint\" — their distinctive pattern of crime types.",
     "profiles": "Country Profiles",
-    "data": "Data Table"
+    "data": "Data Table",
+    "posterTitle": "Analysis Poster",
+    "posterDesc": "View the full project analysis poster summarizing key findings and visualizations (PDF)"
   },
   "about": {
     "title": "About This Project",
@@ -75,7 +79,12 @@
     },
     "credits": {
       "title": "Credits",
-      "content": "This project was developed as part of the Data Science course at the University of Tartu. Crime data sourced from Eurostat crime and criminal justice datasets. Geographic boundaries provided by EuroGeographics."
+      "content": "Crime data sourced from Eurostat crime and criminal justice datasets. Geographic boundaries provided by EuroGeographics."
+    },
+    "sourceCode": {
+      "title": "Source Code",
+      "content": "Interested in the technical details — data processing pipeline, statistical methodologies, or how the visualizations were built? Explore the full source code, notebooks, and documentation on GitHub.",
+      "link": "View project on GitHub"
     }
   },
   "common": {
@@ -99,6 +108,15 @@
     "decrease": "Decrease",
     "increase": "Increase"
   },
+  "regionalCrimes": {
+    "intentionalHomicide": "Intentional homicide",
+    "assault": "Assault",
+    "robbery": "Robbery",
+    "burglary": "Burglary",
+    "burglaryResidential": "Burglary of private residential premises",
+    "theft": "Theft",
+    "theftMotorVehicle": "Theft of a motorized land vehicle"
+  },
   "crimeCategories": {
     "violence": "Violence",
     "sexual": "Sexual Crimes",
@@ -118,11 +136,61 @@
     "allCrimesDesc": "Complete list of all recorded crime types in {country}, showing the rate per 100,000 inhabitants and comparison to European average.",
     "crimeOfYear": "Crime of the Year (2008-2023)",
     "crimeOfYearDesc": "The most common crime type in {country} for each year. Different colors represent different crime types. Hover over bars to see details.",
+    "yearToYearTitle": "Year-to-Year Crime Rate Changes",
+    "yearToYearDesc": "How each crime type changed from year to year in {country}. Green means the crime rate decreased compared to the previous year, red means it increased.",
     "trendTitle": "Crime Trend Over Time",
     "trendDesc": "How the selected crime type has changed in {country} from 2008 to 2023, compared to the European average.",
     "selectCrime": "Select crime type:",
     "rateHeader": "Rate (per 100k)",
-    "vsEU": "vs EU"
+    "vsEU": "vs EU",
+    "regionalTitle": "Regional Crime Map (NUTS-3)",
+    "regionalDesc": "Crime rates across NUTS-3 regions within {country}. Select a crime type and year to see how rates vary by region. Hover over a region for details. Data covers 7 major crime categories."
+  },
+  "insights": {
+    "title": "Key Findings",
+    "subtitle": "Notable patterns and observations discovered during the analysis of European crime data.",
+    "disclaimer": "These are analytical observations based on the data. They reflect patterns we identified, but may not capture the full picture. Differences in national reporting practices, legal definitions, and data availability can influence the results.",
+    "countryNote": "Observations related to this country",
+    "declining": "Declining",
+    "rising": "Rising",
+    "shift": "Shift",
+    "context": "Context",
+    "property-crime-decline": {
+      "title": "Property Crime is Declining Across Europe",
+      "description": "Burglary, robbery, and theft show consistent 10-15 year downward trends across most European countries. This may be connected to improved security technology (surveillance cameras, alarm systems), the shift towards a cashless society, and people carrying less valuable items in public."
+    },
+    "modern-crime-rise": {
+      "title": "Modern Crime Types are on the Rise",
+      "description": "Acts against computer systems, money laundering, and drug-related offences show upward trends since 2016. This likely reflects both the actual growth of digital and organized crime, and improved detection capabilities by law enforcement — better banking surveillance, automated scanning tools, and dedicated cybercrime units."
+    },
+    "sexual-violence-reporting": {
+      "title": "Sexual Violence Statistics Reflect Reporting Culture",
+      "description": "Countries like Sweden show among the highest sexual violence rates in Europe, particularly after 2018. This is largely attributed to consent-based legislation (Sweden's 2018 law), the #MeToo movement increasing willingness to report, and broader legal definitions of sexual offences. Higher recorded rates in these countries likely reflect better detection and reporting, not necessarily higher actual crime."
+    },
+    "baltic-homicide-decline": {
+      "title": "Sharp Homicide Decline in the Baltic States",
+      "description": "Lithuania, Estonia, and Latvia were among Europe's highest-rate countries for intentional homicide in 2008, but have seen dramatic declines since then. This suggests societal stabilization, economic development, and the narrowing of the gap between Baltic and Western European safety levels."
+    },
+    "post-covid-surge": {
+      "title": "Post-COVID Surge in Theft and Robbery",
+      "description": "After a drop during COVID-19 lockdowns (2020-2021), theft and robbery rates began climbing again from 2022 onwards. This coincides with the return of public activity, tourism, and crowded spaces — conditions that create more opportunities for these types of crime."
+    },
+    "small-country-effect": {
+      "title": "Small Countries Show Volatile Statistics",
+      "description": "Countries with very small populations (like Liechtenstein) can show extreme per-capita rates due to small absolute numbers. A handful of incidents can dramatically shift the per 100,000 rate, making these countries appear as outliers when they may not represent a genuine safety concern."
+    },
+    "fraud-replacing-theft": {
+      "title": "Fraud is Replacing Theft as the Top Crime",
+      "description": "In Spain and Poland, fraud has overtaken theft as the most common crime type in recent years (around 2017-2021). This structural shift reflects the move towards online commerce and digital transactions, creating new opportunities for fraud while reducing traditional theft."
+    },
+    "finland-cybercrime": {
+      "title": "Cybercrime Spike in Recent Years",
+      "description": "Finland shows a notable spike in acts against computer systems in 2022-2023. This could be related to legislative changes, new detection software, or increased reporting of cyber incidents."
+    },
+    "drugs-top-crime": {
+      "title": "Drug Offences Have Risen to the Top",
+      "description": "In some countries, unlawful acts involving controlled drugs have become the most frequently recorded crime type. This may reflect changes in police enforcement priorities and border control practices rather than necessarily higher drug consumption."
+    }
   },
   "compare": {
     "title": "Compare Countries",

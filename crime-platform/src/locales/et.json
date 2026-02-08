@@ -32,7 +32,9 @@
   },
   "home": {
     "title": "Euroopa Kuritegevuse Analüüs",
-    "subtitle": "Interaktiivne kuritegevuse andmete visualiseerimine 39 Euroopa riigis (2008-2023)"
+    "subtitle": "Interaktiivne kuritegevuse andmete visualiseerimine 39 Euroopa riigis (2008-2023)",
+    "exploreCountry": "Uuri riiki",
+    "exploreCountryPlaceholder": "Sisesta riigi nimi..."
   },
   "filters": {
     "crimeType": "Kuriteo liik",
@@ -57,7 +59,9 @@
     "fingerprints": "Kriminaalsed sõrmejäljed: riik vs Euroopa keskmine",
     "fingerprintsDesc": "See soojuskaart võrdleb iga riigi kuritegevuse määrasid Euroopa keskmisega (2019-2023 andmed). Roheline tähendab alla keskmise, punane üle keskmise. Väärtused näitavad, mitu korda kõrgem või madalam on EL-i keskmisest (1.0 = täpselt keskmine). See visualiseerimine paljastab iga riigi ainulaadse \"kriminaalse sõrmejälje\".",
     "profiles": "Riikide profiilid",
-    "data": "Andmetabel"
+    "data": "Andmetabel",
+    "posterTitle": "Analüüsi poster",
+    "posterDesc": "Vaata projekti analüüsi posterit, mis võtab kokku peamised leiud ja visualiseeringud (PDF)"
   },
   "about": {
     "title": "Projektist",
@@ -75,7 +79,12 @@
     },
     "credits": {
       "title": "Tänuavaldused",
-      "content": "See projekt töötati välja Tartu Ülikooli andmeteaduse kursuse raames. Kuritegevuse andmed pärinevad Eurostati kuritegevuse ja kriminaalõiguse andmebaasidest. Geograafilised piirid on pärit EuroGeographicsilt."
+      "content": "Kuritegevuse andmed pärinevad Eurostati kuritegevuse ja kriminaalõiguse andmebaasidest. Geograafilised piirid on pärit EuroGeographicsilt."
+    },
+    "sourceCode": {
+      "title": "Lähtekood",
+      "content": "Huvitab tehniline pool — andmetöötluse protsess, statistilised metoodikad või kuidas visualiseeringud on üles ehitatud? Tutvu kogu lähtekoodi, notebook'ide ja dokumentatsiooniga GitHubis.",
+      "link": "Vaata projekti GitHubis"
     }
   },
   "common": {
@@ -99,6 +108,15 @@
     "decrease": "Vähenemine",
     "increase": "Suurenemine"
   },
+  "regionalCrimes": {
+    "intentionalHomicide": "Tahtlik tapmine",
+    "assault": "Kallaletung",
+    "robbery": "Röövimine",
+    "burglary": "Sissemurdmine",
+    "burglaryResidential": "Sissemurdmine eluruumidesse",
+    "theft": "Vargus",
+    "theftMotorVehicle": "Mootorsõiduki vargus"
+  },
   "crimeCategories": {
     "violence": "Vägivald",
     "sexual": "Seksuaalkuriteod",
@@ -118,11 +136,61 @@
     "allCrimesDesc": "Kõigi registreeritud kuriteotüüpide täielik nimekiri riigis {country}, näidates määra 100 000 elaniku kohta ja võrdlust Euroopa keskmisega.",
     "crimeOfYear": "Aasta kuritegu (2008-2023)",
     "crimeOfYearDesc": "Kõige levinum kuriteotüüp riigis {country} igal aastal. Erinevad värvid tähistavad erinevaid kuriteotüüpe. Detailide nägemiseks vii hiir tulpade kohale.",
+    "yearToYearTitle": "Aastased kuritegevuse muutused",
+    "yearToYearDesc": "Kuidas iga kuriteoliik muutus aastast aastasse riigis {country}. Roheline tähendab, et kuritegevuse määr vähenes võrreldes eelmise aastaga, punane tähendab suurenemist.",
     "trendTitle": "Kuritegevuse trend ajas",
     "trendDesc": "Kuidas valitud kuriteotüüp on muutunud riigis {country} aastatel 2008-2023, võrreldes Euroopa keskmisega.",
     "selectCrime": "Vali kuriteotüüp:",
     "rateHeader": "Määr (100k kohta)",
-    "vsEU": "vs EL"
+    "vsEU": "vs EL",
+    "regionalTitle": "Piirkondlik kuritegevuse kaart (NUTS-3)",
+    "regionalDesc": "Kuritegevuse määrad NUTS-3 piirkondade lõikes riigis {country}. Vali kuriteoliik ja aasta, et näha, kuidas määrad piirkonniti erinevad. Detailide nägemiseks vii hiir piirkonna kohale. Andmed hõlmavad 7 peamist kuriteo kategooriat."
+  },
+  "insights": {
+    "title": "Peamised leiud",
+    "subtitle": "Märkimisväärsed mustrid ja tähelepanekud, mis avastati Euroopa kuritegevuse andmete analüüsi käigus.",
+    "disclaimer": "Need on analüütilised tähelepanekud, mis põhinevad andmetel. Need peegeldavad mustreid, mida me tuvastasime, kuid ei pruugi anda täielikku pilti. Erinevused riikide aruandlustavades, õiguslikes definitsioonides ja andmete kättesaadavuses võivad tulemusi mõjutada.",
+    "countryNote": "Selle riigiga seotud tähelepanekud",
+    "declining": "Langus",
+    "rising": "Tõus",
+    "shift": "Nihe",
+    "context": "Kontekst",
+    "property-crime-decline": {
+      "title": "Varakuritegevus väheneb kogu Euroopas",
+      "description": "Sissemurdmine, röövimine ja vargus näitavad järjepidevat 10-15 aastast langustrendi enamikus Euroopa riikides. See võib olla seotud turvatehnika paranemisega (valvekaamerad, signalisatsioonid), sularahata ühiskonnale üleminekuga ja sellega, et inimesed kannavad kaasas vähem väärtuslikke esemeid."
+    },
+    "modern-crime-rise": {
+      "title": "Kaasaegsed kuriteotüübid on tõusuteel",
+      "description": "Arvutisüsteemide vastu suunatud teod, rahapesu ja narkokuriteod näitavad tõusutrendi alates 2016. aastast. See peegeldab tõenäoliselt nii digitaalse ja organiseeritud kuritegevuse tegelikku kasvu kui ka õiguskaitseasutuste paranenud avastamisvõimet — parem pangajärelevalve, automatiseeritud skaneerimisvahendid ja spetsiaalsed küberkuritegevuse üksused."
+    },
+    "sexual-violence-reporting": {
+      "title": "Seksuaalvägivalla statistika peegeldab aruandluskultuuri",
+      "description": "Sellised riigid nagu Rootsi näitavad Euroopa kõrgeimaid seksuaalvägivalla määrasid, eriti pärast 2018. aastat. See on suuresti seotud nõusolekupõhise seadusandlusega (Rootsi 2018. aasta seadus), #MeToo liikumisega, mis suurendas teatamisvalmidust, ja seksuaalkuritegude laiemate õiguslike definitsioonidega. Kõrgemad registreeritud määrad nendes riikides peegeldavad tõenäoliselt paremat avastamist ja teatamist, mitte tingimata kõrgemat tegelikku kuritegevust."
+    },
+    "baltic-homicide-decline": {
+      "title": "Järsk mõrvade vähenemine Balti riikides",
+      "description": "Leedu, Eesti ja Läti olid 2008. aastal Euroopa kõrgeimate tahtlike tapmiste määradega riikide seas, kuid on sellest ajast näidanud dramaatilist langust. See viitab ühiskondlikule stabiliseerumisele, majandusarengule ja Balti ning Lääne-Euroopa turvalisuse tasemete vahelise lõhe vähenemisele."
+    },
+    "post-covid-surge": {
+      "title": "COVID-järgne varguste ja röövimiste tõus",
+      "description": "Pärast COVID-19 lockdowni aegset langust (2020-2021) hakkasid varguste ja röövimiste määrad taas tõusma alates 2022. aastast. See langeb kokku avaliku tegevuse, turismi ja rahvarohkete kohtade taastumisega — tingimused, mis loovad rohkem võimalusi seda tüüpi kuritegudeks."
+    },
+    "small-country-effect": {
+      "title": "Väikeriikide statistika on ebastabiilne",
+      "description": "Väga väikese rahvaarvuga riigid (nagu Liechtenstein) võivad näidata äärmuslikke elanike kohta arvutatud määrasid väikeste absoluutarvude tõttu. Käputäis juhtumeid võib dramaatiliselt muuta 100 000 elaniku kohta arvutatud määra, muutes need riigid näiliselt erandlikuks, kuigi need ei pruugi esindada tegelikku turvaprobleemi."
+    },
+    "fraud-replacing-theft": {
+      "title": "Pettus asendab vargust peamise kuriteona",
+      "description": "Hispaanias ja Poolas on pettus viimastel aastatel (umbes 2017-2021) ületanud varguse kui levinuima kuriteoliigi. See struktuurne nihe peegeldab üleminekut veebikaubandusele ja digitaalsetele tehingutele, mis loob uusi võimalusi pettusteks, vähendades samal ajal traditsioonilist vargust."
+    },
+    "finland-cybercrime": {
+      "title": "Küberkuritegevuse hüpe viimastel aastatel",
+      "description": "Soomes on märgatav arvutisüsteemide vastu suunatud tegude hüpe aastatel 2022-2023. See võib olla seotud seadusandlike muudatuste, uue tuvastustarkvara või küberintsidentide suurenenud teatamisega."
+    },
+    "drugs-top-crime": {
+      "title": "Narkokuriteod on tõusnud esiplaanile",
+      "description": "Mõnedes riikides on kontrollitud aineid hõlmavad ebaseaduslikud teod muutunud kõige sagedamini registreeritud kuriteoliigiks. See võib peegeldada muutusi politsei jõustamisprioriteetides ja piirikontrolli tavades, mitte tingimata kõrgemat narkotarbimist."
+    }
   },
   "compare": {
     "title": "Võrdle riike",

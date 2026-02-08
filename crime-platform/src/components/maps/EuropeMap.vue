@@ -142,6 +142,7 @@ const onEachFeature = (feature, layer) => {
       const layer = e.target
       layer.setStyle(highlightStyle)
       layer.bringToFront()
+      layer.getElement().style.cursor = 'pointer'
 
       const value = getCrimeValue(countryCode)
       const { min, max } = getMinMax()
@@ -263,7 +264,12 @@ onMounted(async () => {
            :class="{ positive: hoverInfo.comparison > 0, negative: hoverInfo.comparison < 0 }">
         {{ hoverInfo.comparison > 0 ? '+' : '' }}{{ hoverInfo.comparison }}% {{ t('common.vsAvg') }}
       </div>
-      <div class="tooltip-hint">{{ t('common.clickToExplore') }}</div>
+      <div class="tooltip-hint">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h6v6"/><path d="M10 14L21 3"/>
+        </svg>
+        {{ t('common.clickToExplore') }}
+      </div>
     </div>
 
     <div class="map-legend">
@@ -370,17 +376,27 @@ onMounted(async () => {
 }
 
 .tooltip-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px solid #e2e8f0;
   font-size: 0.75rem;
-  color: #1a1a2e;
+  color: white;
   font-weight: 600;
-  background: #f0f9ff;
+  background: #4575b4;
   margin: 0.5rem -1rem -0.75rem;
   padding: 0.5rem 1rem;
   border-radius: 0 0 0.5rem 0.5rem;
   text-align: center;
+  animation: pulse-hint 2s ease-in-out infinite;
+}
+
+@keyframes pulse-hint {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .map-legend {

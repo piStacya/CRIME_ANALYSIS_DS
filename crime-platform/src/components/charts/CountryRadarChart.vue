@@ -116,7 +116,7 @@ const getTopCrimeTypes = () => {
     })
     .filter(s => s !== null)
     .sort((a, b) => b.countryValue - a.countryValue)
-    .slice(0, 10) // Top 10 crimes
+    .slice(0, 10)
 
   return scores
 }
@@ -203,7 +203,6 @@ const chartOptions = {
   }
 }
 
-// Load data
 onMounted(async () => {
   try {
     const base = import.meta.env.BASE_URL

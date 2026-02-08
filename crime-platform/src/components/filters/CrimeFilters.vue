@@ -189,4 +189,16 @@ onMounted(async () => {
   background: #1a1a2e;
   color: white;
 }
+
+@media (max-width: 768px) {
+  .crime-filters {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .filter-select {
+    min-width: 0;
+    width: 100%;
+  }
+}
 </style>

@@ -269,5 +269,19 @@ const goToHome = () => {
   .feature-card {
     padding: 1rem;
   }
+
+  .cta-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat-divider {
+    display: none;
+  }
 }
 </style>

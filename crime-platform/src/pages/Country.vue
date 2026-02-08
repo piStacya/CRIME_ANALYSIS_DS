@@ -19,6 +19,9 @@ import {
   Filler
 } from 'chart.js'
 import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
+import CountryYearToYearHeatmap from '@/components/charts/CountryYearToYearHeatmap.vue'
+import RegionalMap from '@/components/maps/RegionalMap.vue'
+import { getCountryInsights } from '@/data/insights'
 
 ChartJS.register(
   CategoryScale,
@@ -44,6 +47,16 @@ const countryData = ref(null)
 const crimeData = ref(null)
 const crimesMetadata = ref(null)
 const countriesMetadata = ref(null)
+const hasRegionalData = ref(false)
+
+const countryInsights = computed(() => getCountryInsights(countryCode.value))
+
+const categoryColors = {
+  declining: '#1a9850',
+  rising: '#d73027',
+  shift: '#4575b4',
+  context: '#8856a7'
+}
 
 const showCrimeDropdown = ref(false)
 const crimeSearch = ref('')
@@ -405,6 +418,14 @@ onMounted(async () => {
     crimesMetadata.value = await crimesRes.json()
     countriesMetadata.value = await countriesRes.json()
     loading.value = false
+
+    try {
+      const manifestRes = await fetch(`${base}data/regions/manifest.json`)
+      if (manifestRes.ok) {
+        const manifest = await manifestRes.json()
+        hasRegionalData.value = manifest.includes(countryCode.value)
+      }
+    } catch (e) {}
   } catch (err) {
     console.error('Error loading data:', err)
     loading.value = false
@@ -433,9 +454,45 @@ onUnmounted(() => {
           </div>
         </div>
         <p class="subtitle">{{ t('country.subtitle') }}</p>
+        <hr class="header-divider" />
       </header>
 
+      <div v-if="countryInsights.length" class="country-insights">
+        <div class="insights-disclaimer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>{{ t('insights.countryNote') }}</span>
+        </div>
+        <div
+          v-for="insight in countryInsights"
+          :key="insight.id"
+          class="country-insight-card"
+        >
+          <span
+            class="insight-badge"
+            :style="{ backgroundColor: categoryColors[insight.category] }"
+          >
+            {{ t(`insights.${insight.category}`) }}
+          </span>
+          <div class="country-insight-text">
+            <h3>{{ t(`insights.${insight.id}.title`) }}</h3>
+            <p>{{ t(`insights.${insight.id}.description`) }}</p>
+          </div>
+        </div>
+      </div>
+
       <div class="content-grid">
+        <section v-if="hasRegionalData" class="viz-section full-width">
+          <h2>{{ t('country.regionalTitle') }}</h2>
+          <p class="description">
+            {{ t('country.regionalDesc', { country: countryName }) }}
+          </p>
+          <RegionalMap :countryCode="countryCode" />
+        </section>
+
         <section class="viz-section bar-section">
           <h2>{{ t('country.topCrimes') }}</h2>
           <p class="description">
@@ -485,21 +542,7 @@ onUnmounted(() => {
           </div>
         </section>
 
-        <section class="viz-section full-width">
-          <h2>{{ t('country.crimeOfYear') }}</h2>
-          <p class="description">
-            {{ t('country.crimeOfYearDesc', { country: countryName }) }}
-          </p>
-          <div class="crime-legend">
-            <span v-for="code in crimeCodesWithColors" :key="code" class="legend-item">
-              <span class="legend-color" :style="{ backgroundColor: crimeColorsByCode[code] }"></span>
-              {{ crimesMetadata?.find(c => c.code === code) ? getCrimeName(crimesMetadata.find(c => c.code === code)) : code }}
-            </span>
-          </div>
-          <div class="chart-container coty-chart">
-            <Bar :data="crimeOfYearChartData" :options="crimeOfYearChartOptions" />
-          </div>
-        </section>
+        <hr class="section-divider" />
 
         <section class="viz-section full-width">
           <h2>{{ t('country.trendTitle') }}</h2>
@@ -540,6 +583,32 @@ onUnmounted(() => {
           </div>
           <div class="chart-container trend-chart">
             <Line :data="trendChartData" :options="trendChartOptions" />
+          </div>
+        </section>
+
+        <section class="viz-section full-width">
+          <h2>{{ t('country.crimeOfYear') }}</h2>
+          <p class="description">
+            {{ t('country.crimeOfYearDesc', { country: countryName }) }}
+          </p>
+          <div class="crime-legend">
+            <span v-for="code in crimeCodesWithColors" :key="code" class="legend-item">
+              <span class="legend-color" :style="{ backgroundColor: crimeColorsByCode[code] }"></span>
+              {{ crimesMetadata?.find(c => c.code === code) ? getCrimeName(crimesMetadata.find(c => c.code === code)) : code }}
+            </span>
+          </div>
+          <div class="chart-container coty-chart">
+            <Bar :data="crimeOfYearChartData" :options="crimeOfYearChartOptions" />
+          </div>
+        </section>
+
+        <section class="viz-section full-width">
+          <h2>{{ t('country.yearToYearTitle') }}</h2>
+          <p class="description">
+            {{ t('country.yearToYearDesc', { country: countryName }) }}
+          </p>
+          <div class="heatmap-content">
+            <CountryYearToYearHeatmap :countryCode="countryCode" />
           </div>
         </section>
       </div>
@@ -593,6 +662,19 @@ onUnmounted(() => {
   margin: 0;
 }
 
+.header-divider {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 1rem 0 0;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 0.5rem 0;
+  grid-column: 1 / -1;
+}
+
 .year-selector {
   display: flex;
   align-items: center;
@@ -613,6 +695,63 @@ onUnmounted(() => {
   border: 1px solid #e2e8f0;
   border-radius: 0.375rem;
   font-size: 1rem;
+}
+
+.country-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.insights-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #92400e;
+}
+
+.insights-disclaimer svg {
+  flex-shrink: 0;
+  color: #d97706;
+}
+
+.country-insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-left: 3px solid #e2e8f0;
+}
+
+.insight-badge {
+  flex-shrink: 0;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-top: 2px;
+}
+
+.country-insight-text h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 0.375rem;
+}
+
+.country-insight-text p {
+  font-size: 0.825rem;
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .content-grid {
@@ -654,6 +793,10 @@ onUnmounted(() => {
   font-size: 0.875rem;
   margin: 0 0 1rem;
   line-height: 1.5;
+}
+
+.heatmap-content {
+  overflow-x: auto;
 }
 
 .chart-container {
@@ -857,8 +1000,83 @@ onUnmounted(() => {
 .ratio.low { color: #1a9850; }
 
 @media (max-width: 768px) {
+  .country-page {
+    padding: 1rem;
+  }
+
+  .country-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
   .content-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .viz-section {
+    padding: 1rem;
+  }
+
+  .viz-section h2 {
+    font-size: 1rem;
+  }
+
+  .chart-container.radar-chart {
+    height: 300px;
+  }
+
+  .chart-container.coty-chart {
+    height: 250px;
+  }
+
+  .chart-container.trend-chart {
+    height: 280px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 450px;
+  }
+
+  .heatmap-content {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .regional-map {
+    height: 280px;
+  }
+
+  .crime-selector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .crime-dropdown-wrapper {
+    width: 100%;
+  }
+
+  .crime-dropdown-trigger {
+    width: 100%;
+  }
+
+  .crime-dropdown {
+    width: 100%;
+  }
+
+  .country-insight-card {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
 </style>

@@ -217,7 +217,6 @@ const getColorForIndex = (code) => {
   position: relative;
 }
 
-/* Compact mode styles */
 .country-multi-select.compact {
   flex-direction: row;
   gap: 0;

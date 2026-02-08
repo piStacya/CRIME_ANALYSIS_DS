@@ -474,7 +474,6 @@ onUnmounted(() => {
       <template v-if="selectedCountries.length >= 2">
 
         <div class="content-grid">
-          <!-- Top Crimes Comparison -->
           <section class="viz-section">
             <h2>{{ t('compare.topCrimes') }}</h2>
             <p class="description">
@@ -485,7 +484,6 @@ onUnmounted(() => {
             </div>
           </section>
 
-          <!-- Criminal Fingerprint Comparison -->
           <section class="viz-section">
             <h2>{{ t('compare.fingerprints') }}</h2>
             <p class="description">
@@ -496,7 +494,6 @@ onUnmounted(() => {
             </div>
           </section>
 
-          <!-- Crime Trend Over Time -->
           <section class="viz-section full-width">
             <h2>{{ t('compare.trends') }}</h2>
             <p class="description">
@@ -515,7 +512,6 @@ onUnmounted(() => {
             </div>
           </section>
 
-          <!-- Comparison Table -->
           <section class="viz-section full-width">
             <h2>{{ t('compare.dataTable') }}</h2>
             <p class="description">
@@ -951,7 +947,7 @@ onUnmounted(() => {
   }
 
   .compare-header h1 {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
   }
 
   .filters-bar {
@@ -962,10 +958,41 @@ onUnmounted(() => {
 
   .countries-area {
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .year-area {
-    align-self: flex-end;
+    align-self: flex-start;
+  }
+
+  .country-picker {
+    width: 100%;
+  }
+
+  .crime-selector select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .viz-section h2 {
+    font-size: 1rem;
+  }
+
+  .chart-container.bar-chart {
+    height: 300px;
+  }
+
+  .chart-container.radar-chart {
+    height: 300px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 500px;
   }
 }
 </style>
