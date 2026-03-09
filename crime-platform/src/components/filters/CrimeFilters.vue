@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useFiltersStore } from '@/stores/filters'
 import { useI18n } from 'vue-i18n'
 import { useTranslations } from '@/composables/useTranslations'
+import AppSelect from '@/components/filters/AppSelect.vue'
 
 const props = defineProps({
   hideYear: {
@@ -31,6 +32,22 @@ const groupedCrimes = computed(() => {
   return groups
 })
 
+const crimeGroups = computed(() => {
+  return Object.values(groupedCrimes.value)
+    .filter(g => g.crimes.length > 0)
+    .map(g => ({
+      label: g.label,
+      items: g.crimes.map(c => ({ value: c.code, label: getCrimeName(c) }))
+    }))
+})
+
+const yearOptions = computed(() => {
+  return filtersStore.years.map(y => ({ value: y, label: String(y) }))
+})
+
+const onCrimeChange = (val) => filtersStore.setCrimeType(val)
+const onYearChange = (val) => filtersStore.setYear(Number(val))
+
 onMounted(async () => {
   try {
     const base = import.meta.env.BASE_URL
@@ -55,42 +72,20 @@ onMounted(async () => {
   <div class="crime-filters">
     <div class="filter-group">
       <label class="filter-label">{{ t('filters.crimeType') }}</label>
-      <select
-        class="filter-select"
-        :value="filtersStore.selectedCrimeType"
-        @change="filtersStore.setCrimeType($event.target.value)"
-      >
-        <optgroup
-          v-for="(category, key) in groupedCrimes"
-          :key="key"
-          :label="category.label"
-        >
-          <option
-            v-for="crime in category.crimes"
-            :key="crime.code"
-            :value="crime.code"
-          >
-            {{ getCrimeName(crime) }}
-          </option>
-        </optgroup>
-      </select>
+      <AppSelect
+        :modelValue="filtersStore.selectedCrimeType"
+        @update:modelValue="onCrimeChange"
+        :groups="crimeGroups"
+      />
     </div>
 
     <div v-if="!hideYear" class="filter-group">
       <label class="filter-label">{{ t('filters.year') }}</label>
-      <select
-        class="filter-select"
-        :value="filtersStore.selectedYear"
-        @change="filtersStore.setYear(Number($event.target.value))"
-      >
-        <option
-          v-for="year in filtersStore.years"
-          :key="year"
-          :value="year"
-        >
-          {{ year }}
-        </option>
-      </select>
+      <AppSelect
+        :modelValue="filtersStore.selectedYear"
+        @update:modelValue="onYearChange"
+        :options="yearOptions"
+      />
     </div>
 
     <div class="filter-group">
@@ -135,29 +130,8 @@ onMounted(async () => {
   letter-spacing: 0.025em;
 }
 
-.filter-select {
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  background: white;
-  font-size: 0.875rem;
-  color: #1a202c;
+:deep(.app-select-wrapper) {
   min-width: 200px;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-}
-
-.filter-select:hover {
-  border-color: #cbd5e0;
-}
-
-.filter-select:focus {
-  outline: none;
-  border-color: #4fd1c5;
-  box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.1);
 }
 
 .metric-toggle {
@@ -192,13 +166,39 @@ onMounted(async () => {
 
 @media (max-width: 768px) {
   .crime-filters {
-    flex-direction: column;
-    gap: 0.75rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-end;
   }
 
-  .filter-select {
+  .filter-group:first-child {
+    flex: 1;
     min-width: 0;
+  }
+
+  .filter-group:first-child :deep(.app-select-wrapper) {
     width: 100%;
+  }
+
+  .filter-group:last-child {
+    flex-shrink: 0;
+  }
+
+  .filter-group:last-child .filter-label {
+    display: none;
+  }
+
+  .metric-toggle {
+    border-color: #e2e8f0;
+    border-radius: 0.375rem;
+  }
+
+  .toggle-btn {
+    padding: 0.3rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 }
 </style>

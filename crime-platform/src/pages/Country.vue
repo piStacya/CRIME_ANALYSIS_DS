@@ -21,6 +21,7 @@ import {
 import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
 import CountryYearToYearHeatmap from '@/components/charts/CountryYearToYearHeatmap.vue'
 import RegionalMap from '@/components/maps/RegionalMap.vue'
+import AppSelect from '@/components/filters/AppSelect.vue'
 import { getCountryInsights } from '@/data/insights'
 
 ChartJS.register(
@@ -93,6 +94,9 @@ const countryName = computed(() => {
   const country = countriesMetadata.value.find(c => c.code === countryCode.value)
   return country ? getTranslatedCountryName(country) : countryCode.value
 })
+
+const yearOptions = computed(() => filtersStore.years.map(y => ({ value: y, label: String(y) })))
+const onYearChange = (val) => filtersStore.setYear(Number(val))
 
 const colors = ['#d73027', '#fc8d59', '#fee08b', '#d9ef8b', '#91cf60', '#1a9850', '#4575b4', '#74add1']
 
@@ -348,6 +352,11 @@ const getColorForCrime = (crimeCode) => {
 
 const crimeCodesWithColors = Object.keys(crimeColorsByCode)
 
+const activeLegendCodes = computed(() => {
+  const codesInChart = new Set(crimeOfTheYear.value.map(c => c.code))
+  return crimeCodesWithColors.filter(code => codesInChart.has(code))
+})
+
 const crimeOfYearChartData = computed(() => {
   if (!crimeOfTheYear.value.length) return { labels: [], datasets: [] }
 
@@ -390,6 +399,24 @@ const crimeOfYearChartOptions = computed(() => ({
   interaction: { mode: 'index', axis: 'x', intersect: false },
   hover: { animationDuration: 0 }
 }))
+
+const hasData = computed(() => {
+  if (!crimeData.value || !crimesMetadata.value) return false
+  return crimesMetadata.value.some(crime => {
+    return filtersStore.years.some(year => {
+      const val = getCountryValue(crime.code, year)
+      return val !== null
+    })
+  })
+})
+
+const hasSelectedYearData = computed(() => {
+  if (!crimeData.value || !crimesMetadata.value) return false
+  return crimesMetadata.value.some(crime => {
+    const val = getCountryValue(crime.code, filtersStore.selectedYear)
+    return val !== null
+  })
+})
 
 const allCrimesTable = computed(() => {
   if (!crimesMetadata.value || !crimeData.value) return []
@@ -448,14 +475,29 @@ onUnmounted(() => {
           <h1>{{ countryName }}</h1>
           <div class="year-selector">
             <label>{{ t('common.year') }}:</label>
-            <select :value="filtersStore.selectedYear" @change="filtersStore.setYear(Number($event.target.value))">
-              <option v-for="year in filtersStore.years" :key="year" :value="year">{{ year }}</option>
-            </select>
+            <AppSelect
+              :modelValue="filtersStore.selectedYear"
+              @update:modelValue="onYearChange"
+              :options="yearOptions"
+            />
           </div>
         </div>
         <p class="subtitle">{{ t('country.subtitle') }}</p>
         <hr class="header-divider" />
       </header>
+
+      <div v-if="!hasData" class="no-data-message">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h2>{{ t('common.noData') }}</h2>
+        <p>{{ t('country.noDataDesc', { country: countryName }) }}</p>
+        <router-link to="/" class="back-btn">← {{ t('common.backToMap') }}</router-link>
+      </div>
+
+      <template v-else>
 
       <div v-if="countryInsights.length" class="country-insights">
         <div class="insights-disclaimer">
@@ -493,54 +535,60 @@ onUnmounted(() => {
           <RegionalMap :countryCode="countryCode" />
         </section>
 
-        <section class="viz-section bar-section">
-          <h2>{{ t('country.topCrimes') }}</h2>
-          <p class="description">
-            {{ t('country.topCrimesDesc', { country: countryName, year: filtersStore.selectedYear }) }}
-          </p>
-          <div class="chart-container bar-chart">
-            <Bar :data="barChartData" :options="barChartOptions" />
-          </div>
-        </section>
+        <template v-if="hasSelectedYearData">
+          <section class="viz-section bar-section">
+            <h2>{{ t('country.topCrimes') }}</h2>
+            <p class="description">
+              {{ t('country.topCrimesDesc', { country: countryName, year: filtersStore.selectedYear }) }}
+            </p>
+            <div class="chart-container bar-chart">
+              <Bar :data="barChartData" :options="barChartOptions" />
+            </div>
+          </section>
 
-        <section class="viz-section">
-          <h2>{{ t('country.fingerprint') }} - {{ filtersStore.selectedYear }}</h2>
-          <p class="description">
-            {{ t('country.fingerprintDesc', { country: countryName }) }}
-          </p>
-          <div class="chart-container radar-chart">
-            <Radar :data="radarChartData" :options="radarChartOptions" />
-          </div>
-        </section>
+          <section class="viz-section">
+            <h2>{{ t('country.fingerprint') }} - {{ filtersStore.selectedYear }}</h2>
+            <p class="description">
+              {{ t('country.fingerprintDesc', { country: countryName }) }}
+            </p>
+            <div class="chart-container radar-chart">
+              <Radar :data="radarChartData" :options="radarChartOptions" />
+            </div>
+          </section>
 
-        <section class="viz-section full-width">
-          <h2>{{ t('country.allCrimes') }} - {{ filtersStore.selectedYear }}</h2>
-          <p class="description">
-            {{ t('country.allCrimesDesc', { country: countryName }) }}
-          </p>
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>{{ t('compare.crimeType') }}</th>
-                  <th>{{ t('country.rateHeader') }}</th>
-                  <th>{{ t('compare.euAverage') }}</th>
-                  <th>{{ t('country.vsEU') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="crime in allCrimesTable" :key="crime.code">
-                  <td>{{ getCrimeName(crime) }}</td>
-                  <td>{{ crime.value.toFixed(2) }}</td>
-                  <td>{{ crime.europeAvg.toFixed(2) }}</td>
-                  <td class="ratio" :class="{ high: crime.ratio > 1.2, low: crime.ratio < 0.8 }">
-                    {{ crime.ratio ? (crime.ratio > 1 ? '+' : '') + ((crime.ratio - 1) * 100).toFixed(0) + '%' : '-' }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+          <section class="viz-section full-width">
+            <h2>{{ t('country.allCrimes') }} - {{ filtersStore.selectedYear }}</h2>
+            <p class="description">
+              {{ t('country.allCrimesDesc', { country: countryName }) }}
+            </p>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>{{ t('compare.crimeType') }}</th>
+                    <th>{{ t('country.rateHeader') }}</th>
+                    <th>{{ t('compare.euAverage') }}</th>
+                    <th>{{ t('country.vsEU') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="crime in allCrimesTable" :key="crime.code">
+                    <td>{{ getCrimeName(crime) }}</td>
+                    <td>{{ crime.value.toFixed(2) }}</td>
+                    <td>{{ crime.europeAvg.toFixed(2) }}</td>
+                    <td class="ratio" :class="{ high: crime.ratio > 1.2, low: crime.ratio < 0.8 }">
+                      {{ crime.ratio ? (crime.ratio > 1 ? '+' : '') + ((crime.ratio - 1) * 100).toFixed(0) + '%' : '-' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </template>
+
+        <div v-else class="no-year-data">
+          <p>{{ t('country.noYearData', { country: countryName, year: filtersStore.selectedYear }) }}</p>
+        </div>
 
         <hr class="section-divider" />
 
@@ -592,7 +640,7 @@ onUnmounted(() => {
             {{ t('country.crimeOfYearDesc', { country: countryName }) }}
           </p>
           <div class="crime-legend">
-            <span v-for="code in crimeCodesWithColors" :key="code" class="legend-item">
+            <span v-for="code in activeLegendCodes" :key="code" class="legend-item">
               <span class="legend-color" :style="{ backgroundColor: crimeColorsByCode[code] }"></span>
               {{ crimesMetadata?.find(c => c.code === code) ? getCrimeName(crimesMetadata.find(c => c.code === code)) : code }}
             </span>
@@ -612,6 +660,7 @@ onUnmounted(() => {
           </div>
         </section>
       </div>
+      </template>
     </template>
   </div>
 </template>
@@ -627,6 +676,68 @@ onUnmounted(() => {
   text-align: center;
   padding: 4rem;
   color: #718096;
+}
+
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #718096;
+}
+
+.no-data-message svg {
+  color: #cbd5e1;
+}
+
+.no-data-message h2 {
+  font-size: 1.25rem;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.no-data-message p {
+  max-width: 400px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  background: #1a1a2e;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: #2d2d4a;
+}
+
+.no-year-data {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  color: #64748b;
+  font-size: 0.925rem;
+  line-height: 1.6;
+}
+
+.no-year-data p {
+  margin: 0;
 }
 
 .country-header {
@@ -690,12 +801,6 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-.year-selector select {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-}
 
 .country-insights {
   display: flex;
@@ -1002,6 +1107,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .country-page {
     padding: 1rem;
+    overflow-x: hidden;
   }
 
   .country-header h1 {
@@ -1014,6 +1120,19 @@ onUnmounted(() => {
     gap: 0.5rem;
   }
 
+  .year-selector {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    gap: 0.5rem;
+  }
+
+  .year-selector label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
   .content-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -1021,10 +1140,16 @@ onUnmounted(() => {
 
   .viz-section {
     padding: 1rem;
+    overflow: hidden;
+    max-width: 100%;
   }
 
   .viz-section h2 {
     font-size: 1rem;
+  }
+
+  .chart-container {
+    max-width: 100%;
   }
 
   .chart-container.radar-chart {
@@ -1068,10 +1193,30 @@ onUnmounted(() => {
 
   .crime-dropdown-trigger {
     width: 100%;
+    min-width: 0;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+  }
+
+  .crime-dropdown-trigger:hover {
+    border-color: #4575b4;
   }
 
   .crime-dropdown {
     width: 100%;
+    min-width: 0;
+  }
+
+  .crime-legend {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .legend-item {
+    font-size: 0.65rem;
   }
 
   .country-insight-card {

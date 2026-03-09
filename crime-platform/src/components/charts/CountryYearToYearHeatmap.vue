@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTranslations } from '@/composables/useTranslations'
 
@@ -9,6 +9,13 @@ const props = defineProps({
 
 const { t } = useI18n()
 const { getCrimeName } = useTranslations()
+
+const isMobile = ref(window.innerWidth <= 768)
+const onResize = () => { isMobile.value = window.innerWidth <= 768 }
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
+
+const formatYear = (year) => isMobile.value ? "'" + String(year).slice(2) : String(year)
 
 const loading = ref(true)
 const crimeData = ref(null)
@@ -184,7 +191,7 @@ onMounted(async () => {
                 :key="year"
                 class="year-header"
               >
-                {{ year }}
+                {{ formatYear(year) }}
               </th>
             </tr>
           </thead>
@@ -406,5 +413,82 @@ onMounted(async () => {
   font-size: 0.65rem;
   color: #718096;
   margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .heatmap-wrapper {
+    position: relative;
+  }
+
+  .heatmap-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(to right, transparent, rgba(247, 250, 252, 0.9));
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .heatmap-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .heatmap-table {
+    table-layout: auto;
+    width: auto;
+  }
+
+  .crime-header {
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
+    font-size: 0.6rem;
+    padding: 0.3rem 0.375rem;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+
+  .year-header {
+    font-size: 0.6rem;
+    padding: 0.3rem 0.1rem;
+    min-width: 32px;
+  }
+
+  .crime-label {
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
+    font-size: 0.6rem;
+    padding: 0.3rem 0.375rem;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+
+  .heatmap-cell {
+    min-width: 32px;
+    padding: 0.25rem 0.1rem;
+    font-size: 0.55rem;
+  }
+
+  .heatmap-legend {
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .legend-scale {
+    width: 100px;
+  }
+
+  .legend-label {
+    font-size: 0.65rem;
+  }
 }
 </style>

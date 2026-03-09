@@ -218,5 +218,12 @@ onMounted(async () => {
 
 .chart-container {
   height: 350px;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 280px;
+  }
 }
 </style>

@@ -463,6 +463,12 @@ onMounted(async () => {
   .content-wrapper {
     padding: 1rem;
     gap: 1rem;
+    overflow-x: hidden;
+  }
+
+  .card {
+    overflow: hidden;
+    max-width: 100%;
   }
 
   .card-header {
@@ -475,6 +481,26 @@ onMounted(async () => {
 
   .card-content {
     padding: 1rem;
+    overflow: hidden;
+  }
+
+  .heatmap-content {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filters-section {
+    padding: 0.75rem;
+  }
+
+  .gif-container {
+    padding: 0.25rem;
+  }
+
+  .animated-gif {
+    max-width: 100%;
+    margin: -17% 0;
+    clip-path: inset(17% 0 17% 0);
   }
 
   .insight-header {

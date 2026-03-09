@@ -59,6 +59,7 @@ body {
 @media (max-width: 768px) {
   body {
     zoom: 1;
+    overflow-x: hidden;
   }
 }
 

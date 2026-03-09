@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import AppSelect from '@/components/filters/AppSelect.vue'
 
 const props = defineProps({
   countryCode: { type: String, required: true }
@@ -41,6 +42,17 @@ const filteredCrimes = computed(() => {
   if (!regionalData.value) return []
   return availableCrimes.filter(c => regionalData.value.crimes[c.code])
 })
+
+const crimeOptions = computed(() => {
+  return filteredCrimes.value.map(c => ({ value: c.code, label: t(`regionalCrimes.${c.key}`) }))
+})
+
+const yearOptions = computed(() => {
+  return years.map(y => ({ value: y, label: String(y) }))
+})
+
+const onCrimeSelect = (val) => { selectedCrime.value = val }
+const onYearSelect = (val) => { selectedYear.value = Number(val) }
 
 const getColor = (value, min, max) => {
   if (value === null || value === undefined) return '#cccccc'
@@ -212,21 +224,19 @@ onUnmounted(() => {
       <div class="regional-controls">
         <div class="control-group">
           <label>{{ t('filters.crimeType') }}:</label>
-          <select v-model="selectedCrime">
-            <option
-              v-for="crime in filteredCrimes"
-              :key="crime.code"
-              :value="crime.code"
-            >
-              {{ t(`regionalCrimes.${crime.key}`) }}
-            </option>
-          </select>
+          <AppSelect
+            :modelValue="selectedCrime"
+            @update:modelValue="onCrimeSelect"
+            :options="crimeOptions"
+          />
         </div>
         <div class="control-group">
           <label>{{ t('common.year') }}:</label>
-          <select v-model="selectedYear">
-            <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
-          </select>
+          <AppSelect
+            :modelValue="selectedYear"
+            @update:modelValue="onYearSelect"
+            :options="yearOptions"
+          />
         </div>
       </div>
 
@@ -283,13 +293,6 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-.control-group select {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  font-size: 0.85rem;
-  background: white;
-}
 
 .map-wrapper {
   position: relative;
@@ -352,17 +355,35 @@ onUnmounted(() => {
   }
 
   .regional-controls {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 90px;
     gap: 0.5rem;
+    align-items: end;
+    margin-bottom: 0.75rem;
+    background: #f8fafc;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
   }
 
   .control-group {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
   }
 
-  .control-group select {
-    flex: 1;
+  .control-group label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #64748b;
+  }
+
+  .control-group :deep(.app-select-wrapper) {
     width: 100%;
+    min-width: 0;
   }
 }
 </style>

@@ -184,6 +184,8 @@ const closeModal = () => {
 }
 
 .filters-section {
+  position: relative;
+  z-index: 10;
   background: white;
   padding: 1.25rem;
   border-radius: 0.5rem;
@@ -309,6 +311,8 @@ const closeModal = () => {
 }
 
 .map-section {
+  position: relative;
+  z-index: 0;
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

@@ -19,6 +19,7 @@ import {
   Filler
 } from 'chart.js'
 import CrimeTrendChart from '@/components/charts/CrimeTrendChart.vue'
+import AppSelect from '@/components/filters/AppSelect.vue'
 import { externalTooltipHandler, hiddenCanvasTooltip } from '@/utils/chartTooltip'
 
 ChartJS.register(
@@ -96,6 +97,18 @@ const handleClickOutside = (e) => {
     showCrimeDropdown.value = false
   }
 }
+
+const yearOptions = computed(() => {
+  return filtersStore.years.map(y => ({ value: y, label: String(y) }))
+})
+
+const crimeOptionsForSelect = computed(() => {
+  if (!crimesMetadata.value) return []
+  return crimesMetadata.value.map(c => ({ value: c.code, label: getCrimeName(c) }))
+})
+
+const onYearChange = (val) => filtersStore.setYear(Number(val))
+const onCrimeChange = (val) => filtersStore.setCrimeType(val)
 
 const colors = [
   '#d73027', '#fc8d59', '#fee08b', '#91cf60', '#1a9850',
@@ -461,9 +474,11 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="year-area">
-          <select class="year-dropdown" :value="filtersStore.selectedYear" @change="filtersStore.setYear(Number($event.target.value))">
-            <option v-for="year in filtersStore.years" :key="year" :value="year">{{ year }}</option>
-          </select>
+          <AppSelect
+            :modelValue="filtersStore.selectedYear"
+            @update:modelValue="onYearChange"
+            :options="yearOptions"
+          />
         </div>
       </section>
 
@@ -501,11 +516,11 @@ onUnmounted(() => {
             </p>
             <div class="crime-selector">
               <label>{{ t('filters.crimeType') }}:</label>
-              <select :value="filtersStore.selectedCrimeType" @change="filtersStore.setCrimeType($event.target.value)">
-                <option v-for="crime in crimesMetadata" :key="crime.code" :value="crime.code">
-                  {{ getCrimeName(crime) }}
-                </option>
-              </select>
+              <AppSelect
+                :modelValue="filtersStore.selectedCrimeType"
+                @update:modelValue="onCrimeChange"
+                :options="crimeOptionsForSelect"
+              />
             </div>
             <div class="chart-container trend-chart">
               <CrimeTrendChart :countries="selectedCountries" />
@@ -748,29 +763,6 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.year-dropdown {
-  padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #334155;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.5rem center;
-}
-
-.year-dropdown:hover {
-  border-color: #94a3b8;
-}
-
-.year-dropdown:focus {
-  outline: none;
-  border-color: #4575b4;
-}
 
 .min-warning {
   text-align: center;
@@ -832,10 +824,7 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
-.crime-selector select {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
+:deep(.app-select-wrapper) {
   min-width: 250px;
 }
 
@@ -944,6 +933,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .compare-page {
     padding: 1rem;
+    overflow-x: hidden;
   }
 
   .compare-header h1 {
@@ -951,31 +941,54 @@ onUnmounted(() => {
   }
 
   .filters-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
   }
 
   .countries-area {
+    flex: 1;
     justify-content: flex-start;
     flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+
+  .country-tag {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .add-country-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .year-area {
-    align-self: flex-start;
+    flex-shrink: 0;
   }
 
   .country-picker {
-    width: 100%;
+    width: 200px;
   }
 
-  .crime-selector select {
-    min-width: 0;
-    width: 100%;
+  .content-grid {
+    gap: 1rem;
+  }
+
+  .viz-section {
+    padding: 1rem;
+    overflow: hidden;
+    max-width: 100%;
   }
 
   .viz-section h2 {
     font-size: 1rem;
+  }
+
+  .chart-container {
+    max-width: 100%;
   }
 
   .chart-container.bar-chart {
@@ -984,6 +997,21 @@ onUnmounted(() => {
 
   .chart-container.radar-chart {
     height: 300px;
+  }
+
+  .chart-container.trend-chart {
+    height: 280px;
+  }
+
+  .crime-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .crime-selector :deep(.app-select-wrapper) {
+    min-width: 0;
+    width: 100%;
   }
 
   .table-container {

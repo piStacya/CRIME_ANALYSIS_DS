@@ -143,6 +143,8 @@
     "selectCrime": "Select crime type:",
     "rateHeader": "Rate (per 100k)",
     "vsEU": "vs EU",
+    "noDataDesc": "There is no crime data available for {country} in our dataset. This country may not report data to Eurostat or the data has not been published.",
+    "noYearData": "No crime data available for {country} in {year}. Try selecting a different year.",
     "regionalTitle": "Regional Crime Map (NUTS-3)",
     "regionalDesc": "Crime rates across NUTS-3 regions within {country}. Select a crime type and year to see how rates vary by region. Hover over a region for details. Data covers 7 major crime categories."
   },

@@ -38,6 +38,17 @@ This project is purely descriptive and does not make causal claims.
 - **Seaborn** — visualization support  
 - **Jupyter Notebook** — analysis environment  
 
+## Web Platform
+- **Vue 3** — frontend framework
+- **Vite** — build tool
+- **Chart.js + vue-chartjs** — interactive charts
+- **Leaflet** — interactive maps
+- **Pinia** — state management
+- **Vue Router** — routing
+- **Vue-i18n** — English/Estonian translations
+- **Tailwind CSS** — styling
+- **GitHub Pages** — deployment
+
 ## Contents
 We have conveniently divided our project into multiple directories to make it easier to find the data that we used, the scripts that we wrote to clean the data, the notebooks that we wrote the analysis on different subjects and the assets we both used and created.
 

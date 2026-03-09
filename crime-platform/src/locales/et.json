@@ -143,6 +143,8 @@
     "selectCrime": "Vali kuriteotüüp:",
     "rateHeader": "Määr (100k kohta)",
     "vsEU": "vs EL",
+    "noDataDesc": "Riigi {country} kohta puuduvad meie andmestikus kuritegevuse andmed. See riik ei pruugi Eurostatile andmeid esitada või andmed ei ole avaldatud.",
+    "noYearData": "Riigi {country} kohta puuduvad andmed aastal {year}. Proovi valida teine aasta.",
     "regionalTitle": "Piirkondlik kuritegevuse kaart (NUTS-3)",
     "regionalDesc": "Kuritegevuse määrad NUTS-3 piirkondade lõikes riigis {country}. Vali kuriteoliik ja aasta, et näha, kuidas määrad piirkonniti erinevad. Detailide nägemiseks vii hiir piirkonna kohale. Andmed hõlmavad 7 peamist kuriteo kategooriat."
   },

@@ -260,7 +260,8 @@ onMounted(async () => {
 }
 
 .heatmap-scroll {
-  overflow: visible;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .heatmap-table {
@@ -397,5 +398,53 @@ onMounted(async () => {
   max-width: 200px;
   white-space: normal;
   line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .heatmap-table {
+    table-layout: auto;
+    width: auto;
+  }
+
+  .crime-header {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .country-header {
+    font-size: 0.5rem;
+    height: 70px;
+    padding: 0.1rem;
+  }
+
+  .crime-label {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .heatmap-cell {
+    padding: 0.1rem;
+    font-size: 0.475rem;
+    height: 16px;
+  }
+
+  .heatmap-legend {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .legend-scale {
+    width: 100px;
+  }
+
+  .legend-label {
+    font-size: 0.65rem;
+  }
 }
 </style>
